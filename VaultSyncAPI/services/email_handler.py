@@ -11,7 +11,7 @@ class EmailSender:
         self.password = 'thos epga owci yqlo'
         self.server = smtplib.SMTP('smtp.gmail.com',587)
 
-    def enviar_bienvenida(self, destinatario: str, nombre: str):
+    def enviar_bienvenida(self, destinatario, nombre):
         # Crear el mensaje
         message = EmailMessage()
         message["Subject"] = "Bienvenido/a a VaultSync"
