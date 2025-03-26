@@ -33,6 +33,20 @@ async def iniciar_sesion(datos: LoginRequest):
     else:
         return {"mensaje": "Credenciales incorrectas"}
 
+@app.post(root_link + "/peticioncontrasena")
+async def petición_cambiar_contrasena(mail: str,nombre:str):
+    email = EmailSender()
+    return email.recuperacion_contrasena(mail,nombre)
+
+
+@app.post(root_link + "/cambiarcontrasena")
+async def cambiar_contrasena(email: str,contrasena:str):
+    db = DatabaseConnection()
+    if db.cambiar_contrasena(email,contrasena):
+        return {"mensaje": "Cambio exitoso"}
+    else:
+        return {"mensaje": "Cambio fallido"}
+
 @app.get(root_link + "/nodos")
 async def obtener_usuario(email: str):
     handler_nodos = HandlerNodos()

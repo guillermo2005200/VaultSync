@@ -27,8 +27,8 @@ class HandlerNodos:
 
         return nodos
 
-    def crear_carpeta(self,nombre: str, ruta_base: str = "./nodos"):
-        ruta_carpeta = os.path.join(ruta_base, nombre)
+    def crear_carpeta(self,nombre: str):
+        ruta_carpeta = os.path.join(self.ruta_base, nombre)
         try:
             os.makedirs(ruta_carpeta, exist_ok=True)
             print(f"Carpeta creada: {ruta_carpeta}")

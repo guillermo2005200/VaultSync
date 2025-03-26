@@ -72,3 +72,28 @@ class DatabaseConnection:
             return False
         finally:
             self.close()
+
+    def cambiar_contrasena(self, email, contrasena):
+        try:
+            self.connect()
+            cursor = self.connection.cursor(dictionary=True)
+
+            sql_select = "SELECT * FROM usuarios WHERE email = %s"
+            cursor.execute(sql_select, (email,))
+            usuario = cursor.fetchone()
+
+            if usuario is None:
+                print("Usuario no encontrado.")
+                return False
+            else:
+                sql_update = "UPDATE usuarios SET contraseña = %s WHERE email = %s"
+                cursor.execute(sql_update, (contrasena, email))
+                self.connection.commit()
+                print("Contraseña actualizada correctamente.")
+                return True
+
+        except Error as e:
+            print(f"Error al cambiar la contraseña: {e}")
+            return False
+        finally:
+            self.close()
