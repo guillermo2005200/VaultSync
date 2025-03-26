@@ -3,28 +3,32 @@ from typing import List
 from models.nodo import Nodo  # Asegúrate de tener esta clase en models/nodo.py
 
 class HandlerNodos:
-    def __init__(self, ruta_base: str = "./nodos"):
+    def __init__(self, ruta_base: str = "../Raiz"):
         self.ruta_base = ruta_base
 
-    def obtener_nodos(self) -> List[Nodo]:
+    def obtener_nodos(self, nombre: str) -> List[Nodo]:
         nodos = []
-        if not os.path.exists(self.ruta_base):
+
+        # Construimos la ruta completa combinando la base con el nombre recibido
+        ruta_objetivo = os.path.join(self.ruta_base, nombre)
+
+        if not os.path.exists(ruta_objetivo):
             print("La ruta no existe.")
             return nodos
 
-        for nombre in os.listdir(self.ruta_base):
-            ruta_completa = os.path.join(self.ruta_base, nombre)
+        for item in os.listdir(ruta_objetivo):
+            ruta_completa = os.path.join(ruta_objetivo, item)
             if os.path.isdir(ruta_completa):
-                nodos.append(Nodo(nombre=nombre, directorio=True))
+                nodos.append(Nodo(nombre=item, contenido="", directorio=True))
             else:
                 with open(ruta_completa, "r", encoding="utf-8", errors="ignore") as f:
                     contenido = f.read()
-                nodos.append(Nodo(nombre=nombre, contenido=contenido, directorio=False))
+                nodos.append(Nodo(nombre=item, contenido=contenido, directorio=False))
+
         return nodos
 
-    def crear_carpeta(nombre: str, ruta_base: str = "./nodos"):
+    def crear_carpeta(self,nombre: str, ruta_base: str = "./nodos"):
         ruta_carpeta = os.path.join(ruta_base, nombre)
-
         try:
             os.makedirs(ruta_carpeta, exist_ok=True)
             print(f"Carpeta creada: {ruta_carpeta}")
