@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
+from fastapi.params import Form, File
+from fastapi import Body
+
 from models.usuario import Usuario
 from repository.HandlerMySQL import DatabaseConnection
 from models.login_request import LoginRequest
@@ -52,3 +55,42 @@ async def obtener_usuario(email: str):
     handler_nodos = HandlerNodos()
     nodos = handler_nodos.obtener_nodos(email)
     return nodos
+
+
+@app.get(root_link + "/descargar")
+async def descargar_archivo(email: str, archivo: str):
+    handler_nodos = HandlerNodos()
+    return handler_nodos.descargar_archivo(email, archivo)
+
+
+@app.post(root_link + "/subir")
+async def subir(email: str = Form(...), archivo: UploadFile = File(...)):
+    handler_nodos = HandlerNodos()
+    if handler_nodos.subir_archivo(email, archivo):
+        return {"mensaje": "Archivo subido correctamente"}
+    else:
+        return {"mensaje": "Error al subir el archivo"}
+
+@app.delete(root_link + "/eliminar")
+async def subir(email: str, archivo: str):
+    handler_nodos = HandlerNodos()
+    if handler_nodos.eliminar_archivo(email, archivo):
+        return {"mensaje": "Archivo eliminado correctamente"}
+    else:
+        return {"mensaje": "Error al eliminar el archivo"}
+
+@app.put(root_link + "/modificar")
+async def modificar_archivo(email: str, archivo: str, contenido: str = Body(...)):
+    handler_nodos = HandlerNodos()
+    if handler_nodos.modificar_contenido(email, archivo, contenido):
+        return {"mensaje": f"Contenido de '{archivo}' modificado correctamente"}
+    else:
+        return {"mensaje": "Archivo no encontrado o error al modificarlo"}
+
+@app.put(root_link + "/modificarnombre")
+async def modificarnombre(email: str,archivo: str, nombre: str):
+    handler_nodos = HandlerNodos()
+    if handler_nodos.modificar_nombre(email, archivo, nombre):
+        return {"mensaje":  f"nombre de '{archivo}' modificado correctamente"}
+    else:
+        return {"mensaje": "Error al modificar nombre"}
