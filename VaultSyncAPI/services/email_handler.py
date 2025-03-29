@@ -42,7 +42,8 @@ class EmailSender:
             print("Error al enviar correo:", ex)
 
 
-    def recuperacion_contrasena(self, destinatario, nombre):
+    def recuperacion_contrasena(self, destinatario):
+        print(destinatario)
         # Crear el mensaje
         message = EmailMessage()
         message["Subject"] = "Bienvenido/a a VaultSync"
@@ -51,7 +52,7 @@ class EmailSender:
 
         # Cuerpo del mensaje
         body = f"""
-            Hola {nombre},
+            Hola,
 
             Vemos que ha tenido problemas con su contraseña
 

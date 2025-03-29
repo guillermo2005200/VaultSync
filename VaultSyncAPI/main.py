@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.params import Form, File
 from fastapi import Body
+from fastapi.middleware.cors import CORSMiddleware
 
 from models.usuario import Usuario
 from repository.HandlerMySQL import DatabaseConnection
@@ -8,7 +9,15 @@ from models.login_request import LoginRequest
 from services.email_handler import EmailSender
 from repository.HandlerNodos import HandlerNodos
 
+
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # o ["*"] para permitir todo
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 root_link = "/api/v1"
 @app.post(root_link + "/registrar")
@@ -37,9 +46,10 @@ async def iniciar_sesion(datos: LoginRequest):
         return {"mensaje": "Credenciales incorrectas"}
 
 @app.post(root_link + "/peticioncontrasena")
-async def petición_cambiar_contrasena(mail: str,nombre:str):
+async def petición_cambiar_contrasena(mail: str):
     email = EmailSender()
-    return email.recuperacion_contrasena(mail,nombre)
+    print(mail)
+    return email.recuperacion_contrasena(mail)
 
 
 @app.post(root_link + "/cambiarcontrasena")
