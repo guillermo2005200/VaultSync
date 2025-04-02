@@ -54,6 +54,7 @@ async def petición_cambiar_contrasena(mail: str):
 
 @app.post(root_link + "/cambiarcontrasena")
 async def cambiar_contrasena(email: str,contrasena:str):
+    print(email+contrasena)
     db = DatabaseConnection()
     if db.cambiar_contrasena(email,contrasena):
         return {"mensaje": "Cambio exitoso"}

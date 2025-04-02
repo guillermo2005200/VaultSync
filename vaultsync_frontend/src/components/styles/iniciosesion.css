@@ -1,4 +1,4 @@
-body{
+body {
 	margin: 0;
 	padding: 0;
 	display: flex;
@@ -8,7 +8,8 @@ body{
 	font-family: 'Jost', sans-serif;
 	background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
 }
-.main{
+
+.maininicio {
 	width: 350px;
 	height: 575px;
 	background: red;
@@ -17,27 +18,34 @@ body{
 	border-radius: 10px;
 	box-shadow: 5px 20px 50px #000;
 }
-#chk{
+
+#chkinicio {
 	display: none;
 }
-.signup{
+
+.signupinicio {
 	position: relative;
-	width:100%;
+	width: 100%;
 	height: 100%;
 }
-label{
+
+.labelinicio {
 	color: #fff;
-	font-size: 2.3em;
+	font-size: 1.8em;
 	justify-content: center;
 	display: flex;
 	margin: 50px;
 	font-weight: bold;
 	cursor: pointer;
 	transition: .5s ease-in-out;
+	text-align: center;
+	margin-bottom: 0px !important;
+	margin-top: 20px !important;
 }
-input{
+
+.inputinicio {
 	width: 60%;
-	height: 10px;
+	height: 35px;
 	background: #e0dede;
 	justify-content: center;
 	display: flex;
@@ -46,8 +54,10 @@ input{
 	border: none;
 	outline: none;
 	border-radius: 5px;
+	margin-bottom: 0px !important;
 }
-button{
+
+.buttoninicio {
 	width: 60%;
 	height: 40px;
 	margin: 10px auto;
@@ -64,27 +74,32 @@ button{
 	transition: .2s ease-in;
 	cursor: pointer;
 }
-button:hover{
+
+.buttoninicio:hover {
 	background: #6d44b8;
 }
-.login{
+
+.logininicio {
 	height: 460px;
 	background: #eee;
 	border-radius: 60% / 10%;
 	transform: translateY(-180px);
 	transition: .8s ease-in-out;
 }
-.login label{
+
+.logininicio .labelinicio {
 	color: #573b8a;
 	transform: scale(.6);
 }
 
-#chk:checked ~ .login{
+#chkinicio:checked ~ .logininicio {
 	transform: translateY(-500px);
 }
-#chk:checked ~ .login label{
-	transform: scale(1);	
+
+#chkinicio:checked ~ .logininicio .labelinicio {
+	transform: scale(1);
 }
-#chk:checked ~ .signup label{
+
+#chkinicio:checked ~ .signupinicio .labelinicio {
 	transform: scale(.6);
 }

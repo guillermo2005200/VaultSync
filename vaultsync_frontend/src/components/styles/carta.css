@@ -1,0 +1,8 @@
+.carta-transparente {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo blanco translúcido */
+    backdrop-filter: blur(10px);               /* Efecto borroso */
+    -webkit-backdrop-filter: blur(10px);       /* Soporte para Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil */
+    border-radius: 10px;
+  }
+  

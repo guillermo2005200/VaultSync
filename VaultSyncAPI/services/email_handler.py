@@ -24,7 +24,7 @@ class EmailSender:
 
             Gracias por registrarte en VaultSync.
 
-            Accede a tu espacio en la nube desde: https://vaultsync.com
+            Accede a tu espacio en la nube desde: http://localhost:5173/
 
             ¡Esperamos que disfrutes del servicio!
         """
@@ -56,7 +56,7 @@ class EmailSender:
 
             Vemos que ha tenido problemas con su contraseña
 
-            Accede a la recuperación de contraseña desde aqui: https://vaultsync.com
+            Accede a la recuperación de contraseña desde aqui: http://localhost:5173/cambiar/{destinatario}
 
             ¡Esperamos que disfrutes del servicio!
         """

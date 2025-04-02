@@ -10,6 +10,13 @@ class VaultSyncService {
   peticionPassword(email) {
     return http.post(`/peticioncontrasena?mail=${encodeURIComponent(email)}`);
   }
+  cambiarContrasena(email, contrasena) {
+    return http.post(`/cambiarcontrasena?email=${encodeURIComponent(email)}&contrasena=${encodeURIComponent(contrasena)}`);
+  }
+  obtenerNodos(email) {
+    return http.get(`/nodos?email=${encodeURIComponent(email)}`);
+  }
 }
+
 
 export default new VaultSyncService();  
