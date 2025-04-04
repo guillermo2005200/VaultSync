@@ -105,3 +105,11 @@ async def modificarnombre(email: str,archivo: str, nombre: str):
         return {"mensaje":  f"nombre de '{archivo}' modificado correctamente"}
     else:
         return {"mensaje": "Error al modificar nombre"}
+
+@app.put(root_link + "/creararchivo")
+async def crear_archivo(archivo: str):
+    handler_nodos = HandlerNodos()
+    if handler_nodos.crear_archivo(archivo):
+        return {"mensaje": "Archivo creado correctamente"}
+    else:
+        return {"mensaje": "Error al crear archivo"}

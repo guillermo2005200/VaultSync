@@ -1,0 +1,28 @@
+/* styles/modal.css */
+
+.modal-transparente .modal-content {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+  
+  .modal-transparente .form-control {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .modal-transparente .btn-primary,
+  .modal-transparente .btn-secondary {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .modal-transparente .btn-primary:hover,
+  .modal-transparente .btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  

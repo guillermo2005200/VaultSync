@@ -109,3 +109,14 @@ class HandlerNodos:
         except Exception as e:
             print(f"Error al modificar nombre: {e}")
             return False
+
+    def crear_archivo(self, nombre: str):
+        ruta_archivo = os.path.join(self.ruta_base, nombre)
+        try:
+            with open(ruta_archivo, "w") as archivo:
+                archivo.write("")  # Archivo vacío o contenido inicial
+            print(f"Archivo creado correctamente en: {ruta_archivo}")
+            return True
+        except Exception as e:
+            print(f"Error al crear el archivo: {e}")
+            return False

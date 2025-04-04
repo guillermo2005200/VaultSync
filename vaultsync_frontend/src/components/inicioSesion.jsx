@@ -1,7 +1,8 @@
 import './styles/iniciosesion.css';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import VaultSyncService from '../services/VaultSyncService';
 import { useNavigate } from 'react-router-dom';
+import { ContactContext } from '../context/userContext';
 
 function InicioSesion() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ function InicioSesion() {
   const [apellido, setApellido] = useState("");
   const [direccion, setDireccion] = useState("");
   const navigate = useNavigate();
+  const { setUserInfo } = useContext(ContactContext);
 
 
   function handleLogin(event) {
@@ -24,6 +26,10 @@ function InicioSesion() {
     VaultSyncService.iniciarSesion(login)
       .then(response => {
         console.log(response.data);
+        setUserInfo({
+          email: email,
+          contrasena: password
+        });
         navigate("/nodos"); // redirige a la ruta /nodos si el login es exitoso
       })
       .catch(error => {

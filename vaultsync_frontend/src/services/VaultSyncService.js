@@ -16,6 +16,9 @@ class VaultSyncService {
   obtenerNodos(email) {
     return http.get(`/nodos?email=${encodeURIComponent(email)}`);
   }
+  crearArchivo(archivo){
+    return http.put(`/creararchivo?archivo=${encodeURIComponent(archivo)}`);
+  };
 }
 
 
