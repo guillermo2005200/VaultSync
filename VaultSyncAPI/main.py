@@ -83,9 +83,10 @@ async def subir(email: str = Form(...), archivo: UploadFile = File(...)):
         return {"mensaje": "Error al subir el archivo"}
 
 @app.delete(root_link + "/eliminar")
-async def subir(email: str, archivo: str):
+async def eliminar(archivo: str):
     handler_nodos = HandlerNodos()
-    if handler_nodos.eliminar_archivo(email, archivo):
+    print(archivo)
+    if handler_nodos.eliminar_archivo(archivo):
         return {"mensaje": "Archivo eliminado correctamente"}
     else:
         return {"mensaje": "Error al eliminar el archivo"}
@@ -99,9 +100,9 @@ async def modificar_archivo(email: str, archivo: str, contenido: str = Body(...)
         return {"mensaje": "Archivo no encontrado o error al modificarlo"}
 
 @app.put(root_link + "/modificarnombre")
-async def modificarnombre(email: str,archivo: str, nombre: str):
+async def modificarnombre(archivo: str, nombre: str):
     handler_nodos = HandlerNodos()
-    if handler_nodos.modificar_nombre(email, archivo, nombre):
+    if handler_nodos.modificar_nombre(archivo, nombre):
         return {"mensaje":  f"nombre de '{archivo}' modificado correctamente"}
     else:
         return {"mensaje": "Error al modificar nombre"}
@@ -113,3 +114,11 @@ async def crear_archivo(archivo: str):
         return {"mensaje": "Archivo creado correctamente"}
     else:
         return {"mensaje": "Error al crear archivo"}
+
+@app.put(root_link + "/crearcarpeta")
+async def crearcarpeta(archivo: str):
+    handler_nodos = HandlerNodos()
+    if handler_nodos.crear_carpeta(archivo):
+        return {"mensaje": "Carpeta creado correctamente"}
+    else:
+        return {"mensaje": "Error al crear carpeta"}

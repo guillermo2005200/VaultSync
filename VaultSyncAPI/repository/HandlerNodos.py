@@ -8,7 +8,7 @@ from models.nodo import Nodo  # Asegúrate de tener esta clase en models/nodo.py
 from fastapi.responses import FileResponse
 
 class HandlerNodos:
-    def __init__(self, ruta_base: str = "../Raiz"):
+    def __init__(self, ruta_base: str = "../Raiz/"):
         self.ruta_base = ruta_base
 
     def obtener_nodos(self, nombre: str) -> List[Nodo]:
@@ -63,20 +63,23 @@ class HandlerNodos:
             print(f"Error al subir archivo: {e}")
             return False
 
+    def eliminar_archivo(self, nombre_archivo: str) -> bool:
+        ruta_archivo = os.path.join(self.ruta_base, nombre_archivo)
 
-    def eliminar_archivo(self, email: str, nombre_archivo: str) -> bool:
-        ruta_archivo = os.path.join(self.ruta_base, email, nombre_archivo)
-
-        if not os.path.isfile(ruta_archivo):
-            print("Archivo no encontrado.")
+        if not os.path.exists(ruta_archivo):
+            print("Archivo o carpeta no encontrado.")
             return False
 
         try:
-            os.remove(ruta_archivo)
-            print(f"Archivo eliminado: {ruta_archivo}")
+            if os.path.isfile(ruta_archivo):
+                os.remove(ruta_archivo)
+                print(f"Archivo eliminado: {ruta_archivo}")
+            elif os.path.isdir(ruta_archivo):
+                shutil.rmtree(ruta_archivo)
+                print(f"Carpeta eliminada recursivamente: {ruta_archivo}")
             return True
         except Exception as e:
-            print(f"Error al eliminar archivo: {e}")
+            print(f"Error al eliminar: {e}")
             return False
 
     def modificar_contenido(self, email: str, nombre_archivo: str, nuevo_contenido: str) -> bool:
@@ -95,9 +98,9 @@ class HandlerNodos:
             print(f"Error al modificar contenido: {e}")
             return False
 
-    def modificar_nombre(self, email: str, archivo: str, nombre: str) -> bool:
-        ruta_archivo = os.path.join(self.ruta_base, email, archivo)
-        nueva_ruta = os.path.join(self.ruta_base, email, nombre)
+    def modificar_nombre(self, archivo: str, nombre: str) -> bool:
+        ruta_archivo = os.path.join(self.ruta_base, archivo)
+        nueva_ruta = os.path.join(self.ruta_base, nombre)
 
         if not os.path.isfile(ruta_archivo):
             print("Archivo no encontrado.")
@@ -112,6 +115,7 @@ class HandlerNodos:
 
     def crear_archivo(self, nombre: str):
         ruta_archivo = os.path.join(self.ruta_base, nombre)
+        print(ruta_archivo)
         try:
             with open(ruta_archivo, "w") as archivo:
                 archivo.write("")  # Archivo vacío o contenido inicial

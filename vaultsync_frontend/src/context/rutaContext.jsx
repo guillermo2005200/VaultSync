@@ -1,25 +1,23 @@
 import { createContext, useState, useEffect } from 'react';
 
 // Crear el contexto
-export const rutaContext = createContext();
+export const RutaContext = createContext();
 
 // Proveedor del contexto
-export function ContactProvider({ children }) {
-    // Recuperar datos de localStorage si existen
-    const storedUserInfo = JSON.parse(localStorage.getItem('userInfo')) || {
-        ruta: ''
-    };
+export function RutaProvider({ children }) {
+    // Recuperar ruta desde localStorage si existe
+    const storedRuta = localStorage.getItem('ruta') || "";
 
-    const [userInfo, setUserInfo] = useState(storedUserInfo);
+    const [ruta, setRuta] = useState(storedRuta);
 
-    // Guardar en localStorage cada vez que `userInfo` cambie
+    // Guardar en localStorage cada vez que `ruta` cambie
     useEffect(() => {
-        localStorage.setItem('userInfo', JSON.stringify(userInfo));
-    }, [userInfo]);
+        localStorage.setItem('ruta', ruta);
+    }, [ruta]);
 
     return (
-        <ContactContext.Provider value={{ userInfo, setUserInfo }}>
+        <RutaContext.Provider value={{ ruta, setRuta }}>
             {children}
-        </ContactContext.Provider>
+        </RutaContext.Provider>
     );
 }

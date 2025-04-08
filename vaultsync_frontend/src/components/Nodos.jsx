@@ -2,12 +2,15 @@ import React, { useState, useEffect, useContext } from 'react';
 import VaultSyncService from '../services/VaultSyncService';
 import './styles/carta.css';
 import { ContactContext } from '../context/userContext';
+import { RutaContext } from '../context/rutaContext';
+import { NodoContext } from '../context/nodoContext';
+
 
 function Nodos() {
   const [nodos, setNodos] = useState([]);
   const { userInfo } = useContext(ContactContext);
-  const [ruta, setRuta] = useState("");
-  const [nodoActivo, setNodoActivo] = useState(null);
+  const { ruta, setRuta } = useContext(RutaContext);
+  const {nodoActivo, setNodoActivo } = useContext(NodoContext);
 
 
   useEffect(() => {
@@ -34,7 +37,7 @@ function Nodos() {
         const nuevaRuta = ruta.substring(0, ruta.lastIndexOf("/"));
         setRuta(nuevaRuta || ""); // vuelve atrás
       } else {
-        const nuevaRuta = ruta ? `${ruta}/${nodo.nombre}` : nodo.nombre;
+        const nuevaRuta = `${ruta}/${nodo.nombre}`;
         setRuta(nuevaRuta); // avanza a carpeta
         console.log(nuevaRuta);
       }
