@@ -4,6 +4,7 @@ import './styles/carta.css';
 import { ContactContext } from '../context/userContext';
 import { RutaContext } from '../context/rutaContext';
 import { NodoContext } from '../context/nodoContext';
+import ModificarCEditarContenidoModal from './modificarContenido';
 
 
 function Nodos() {
@@ -11,12 +12,19 @@ function Nodos() {
   const { userInfo } = useContext(ContactContext);
   const { ruta, setRuta } = useContext(RutaContext);
   const {nodoActivo, setNodoActivo } = useContext(NodoContext);
+  const [showModal, setShowModal] = useState(false);
+  const [contenido, setContenido] = useState("");
 
 
   useEffect(() => {
     retrieveNodos();
   }, [ruta]); // se ejecuta cada vez que cambia la ruta
   
+  const handleClose = () => {
+    setShowModal(false); 
+    window.location.reload();
+  };
+
   const retrieveNodos = () => {
     VaultSyncService.obtenerNodos(userInfo.email+ruta)
       .then(response => {
@@ -42,7 +50,16 @@ function Nodos() {
         console.log(nuevaRuta);
       }
     } else {
+      let encontrado = false;
+      for (let i = 0; i < nodos.length && !encontrado; i++) {
+        if (nodos[i].nombre === nodo.nombre) {
+          setContenido(nodos[i].contenido);
+          encontrado = true;
+        }
+      }
+      setShowModal(true);
       console.log(`Abriendo archivo: ${nodo.nombre}`);
+
     }
   };
 
@@ -71,6 +88,7 @@ function Nodos() {
   );
   
   return (
+    <>
     <div className="container color1 text-white min-vh-100 min-vw-100 mt-5 pt-5" style={{ fontFamily: 'Cursive' }}>
       <div className="row justify-content-center">
         {renderCards(directorios)}
@@ -82,6 +100,8 @@ function Nodos() {
         {renderCards(archivos)}
       </div>
     </div>
+    <ModificarCEditarContenidoModal show={showModal} handleClose={handleClose} cont={contenido} />
+    </>
   );
 }
 

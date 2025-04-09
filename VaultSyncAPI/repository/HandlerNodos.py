@@ -82,8 +82,8 @@ class HandlerNodos:
             print(f"Error al eliminar: {e}")
             return False
 
-    def modificar_contenido(self, email: str, nombre_archivo: str, nuevo_contenido: str) -> bool:
-        ruta_archivo = os.path.join(self.ruta_base, email, nombre_archivo)
+    def modificar_contenido(self, nombre_archivo: str, nuevo_contenido: str) -> bool:
+        ruta_archivo = os.path.join(self.ruta_base, nombre_archivo)
 
         if not os.path.isfile(ruta_archivo):
             print("Archivo no encontrado.")
@@ -100,14 +100,23 @@ class HandlerNodos:
 
     def modificar_nombre(self, archivo: str, nombre: str) -> bool:
         ruta_archivo = os.path.join(self.ruta_base, archivo)
-        nueva_ruta = os.path.join(self.ruta_base, nombre)
 
-        if not os.path.isfile(ruta_archivo):
-            print("Archivo no encontrado.")
+
+        nueva_ruta = "/".join(archivo.split("/")[:-1])
+
+        # Unir la ruta base con el nuevo nombre dentro del mismo directorio
+        ruta_nueva = os.path.join(self.ruta_base, nueva_ruta, nombre)
+
+        print(f"Ruta original: {ruta_archivo}")
+        print(f"Ruta nueva: {ruta_nueva}")
+
+        if not os.path.exists(ruta_archivo):
+            print("Archivo o carpeta no encontrada.")
             return False
+
         try:
-            os.rename(ruta_archivo, nueva_ruta)
-            print(f"Archivo renombrado a: {nueva_ruta}")
+            os.rename(ruta_archivo, ruta_nueva)
+            print(f"Renombrado a: {ruta_nueva}")
             return True
         except Exception as e:
             print(f"Error al modificar nombre: {e}")

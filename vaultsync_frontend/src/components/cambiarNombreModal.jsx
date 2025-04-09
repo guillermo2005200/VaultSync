@@ -4,6 +4,7 @@ import './styles/modal.css';
 import VaultSyncService from '../services/VaultSyncService';
 import { ContactContext } from '../context/userContext';
 import { RutaContext } from '../context/rutaContext';
+import { NodoContext } from '../context/nodoContext';
 
 function ModificarNombre({ show, handleClose}) {
   const [nuevoNombre, setNuevoNombre] = useState("");
@@ -12,11 +13,11 @@ function ModificarNombre({ show, handleClose}) {
   const {nodoActivo} = useContext(NodoContext);
 
   const handleModificar = () => {
-    const email = userInfo.email;
-    const archivo = `${ruta}/${nodoActivo}`;
+    const archivo = `${userInfo.email}/${ruta}/${nodoActivo}`;
     const nombreNuevo = nuevoNombre;
+    console.log(archivo);
 
-    VaultSyncService.modificarNombre(email, archivo, nombreNuevo)
+    VaultSyncService.modificarNombre(archivo, nombreNuevo)
       .then((response) => {
         console.log("Nombre modificado:", response.data);
       })

@@ -92,9 +92,9 @@ async def eliminar(archivo: str):
         return {"mensaje": "Error al eliminar el archivo"}
 
 @app.put(root_link + "/modificar")
-async def modificar_archivo(email: str, archivo: str, contenido: str = Body(...)):
+async def modificar_archivo(archivo: str, contenido: str = Body(...)):
     handler_nodos = HandlerNodos()
-    if handler_nodos.modificar_contenido(email, archivo, contenido):
+    if handler_nodos.modificar_contenido(archivo, contenido):
         return {"mensaje": f"Contenido de '{archivo}' modificado correctamente"}
     else:
         return {"mensaje": "Archivo no encontrado o error al modificarlo"}

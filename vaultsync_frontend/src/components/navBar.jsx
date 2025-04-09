@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import './styles/navbar.css';
 import logo from './images/logo.png';
-import Anadir from './anadirmodal'; // importa aquí
+import Anadir from './anadirmodal';
+import ModificarNombre from './cambiarNombreModal';
 import VaultSyncService from '../services/VaultSyncService';
 import { ContactContext } from '../context/userContext';
 import { RutaContext } from '../context/rutaContext';
@@ -9,17 +10,24 @@ import { NodoContext } from '../context/nodoContext';
 
 function NavBar() {
   const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
   const [tipo, setTipo] = useState("");
-  const {nodoActivo} = useContext(NodoContext);
+  const { nodoActivo } = useContext(NodoContext);
   const { ruta } = useContext(RutaContext);
   const { userInfo } = useContext(ContactContext);
 
   const handleShow = (nuevoTipo) => {
-    setTipo(nuevoTipo);           // 1. Establece el tipo (archivo o carpeta)
-    setShowModal(true);           // 2. Luego muestra el modal
-  };  
+    setTipo(nuevoTipo);
+    setShowModal(true);
+  };
+
+  const handleShow2 = () => {
+    setShowModal2(true);
+  };
+
   const handleClose = () => {
     setShowModal(false);
+    setShowModal2(false);
     window.location.reload();
   };
 
@@ -34,45 +42,75 @@ function NavBar() {
       .catch(e => {
         console.log(e);
       });
-  }
-  
+  };
 
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top shadow">
-        <div className="container-fluid justify-content-between">
-          <ul className="navbar-nav d-flex flex-row gap-3">
-            <li className="nav-item">
-              <a className="nav-link" href="#" onClick={() => handleShow("archivo")}>➕📄</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#" onClick={() => handleShow("carpeta")}>➕📁</a>
-              </li>
-            <li className="nav-item"><a className="nav-link" href="#" onClick={() => handleliminar()}>🗑️</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">✏️</a></li>
-            <li className="nav-item"><a className="nav-link" href="#">📝</a></li>
-          </ul>
+  <div className="container-fluid">
 
-          <div className="mx-auto position-absolute start-50 translate-middle-x">
-            <a className="navbar-brand" href="#">
-              <img src={logo} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
-            </a>
-          </div>
+    {/* Botón hamburguesa a la izquierda */}
+    <button
+      className="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarContenido"
+      aria-controls="navbarContenido"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span className="navbar-toggler-icon"></span>
+    </button>
 
-          <div className="d-flex align-items-center">
-            <img
-              src="https://randomuser.me/api/portraits/men/75.jpg"
-              alt="Perfil"
-              height="40"
-              width="40"
-              className="rounded-circle"
-            />
-          </div>
-        </div>
-      </nav>
+    {/* Logo centrado absoluto */}
+    <div className="position-absolute start-50 translate-middle-x">
+      <a className="navbar-brand" href="#">
+        <img src={logo} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
+      </a>
+    </div>
 
-      {/* Modal separado */}
-      <Anadir show={showModal} handleClose={handleClose} tipo={tipo}/>
+    {/* Imagen de usuario a la derecha */}
+    
+
+    {/* Menú colapsable */}
+    <div className="collapse navbar-collapse" id="navbarContenido">
+      <ul className="navbar-nav d-flex flex-row gap-3">
+        <li className="nav-item">
+          <a className="nav-link" href="#" onClick={() => handleShow("archivo")}>➕📄</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#" onClick={() => handleShow("carpeta")}>➕📁</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#" onClick={() => handleliminar()}>🗑️</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#" onClick={() => handleShow2()}>✏️</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">📥</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">📤</a>
+        </li>
+      </ul>
+    </div>
+    <div className="d-flex align-items-center ms-auto me-3">
+      <img
+        src="https://randomuser.me/api/portraits/men/75.jpg"
+        alt="Perfil"
+        height="40"
+        width="40"
+        className="rounded-circle"
+      />
+    </div>
+  </div>
+  
+</nav>
+
+      {/* Modales */}
+      <Anadir show={showModal} handleClose={handleClose} tipo={tipo} />
+      <ModificarNombre show={showModal2} handleClose={handleClose} />
     </>
   );
 }
