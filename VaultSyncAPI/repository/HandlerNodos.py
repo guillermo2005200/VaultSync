@@ -42,8 +42,8 @@ class HandlerNodos:
             print(f"Error al crear la carpeta: {e}")
             return False
 
-    def descargar_archivo(self, email: str, archivo: str):
-        ruta_archivo = os.path.join(self.ruta_base, email, archivo)
+    def descargar_archivo(self, archivo: str):
+        ruta_archivo = os.path.join(self.ruta_base, archivo)
         if not os.path.exists(ruta_archivo):
             return {"mensaje": "Archivo no encontrado"}
         return FileResponse(ruta_archivo, media_type='application/octet-stream', filename=archivo)

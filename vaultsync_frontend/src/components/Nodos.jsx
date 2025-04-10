@@ -80,7 +80,7 @@ function Nodos() {
           onDoubleClick={() => abrirNodo(nodo)}
         >
           <div className="card-body py-2">
-            <p className="mb-0">{nodo.directorio ? `📁 ${nodo.nombre}` : `📄 ${nodo.nombre}`}</p>
+            <p className="mb-0 nombre-recortada">{nodo.directorio ? `📁 ${nodo.nombre}` : `📄 ${nodo.nombre}`}</p>
           </div>
         </div>
       </div>

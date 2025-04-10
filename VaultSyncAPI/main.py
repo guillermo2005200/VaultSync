@@ -69,9 +69,9 @@ async def obtener_usuario(email: str):
 
 
 @app.get(root_link + "/descargar")
-async def descargar_archivo(email: str, archivo: str):
+async def descargar_archivo(archivo: str):
     handler_nodos = HandlerNodos()
-    return handler_nodos.descargar_archivo(email, archivo)
+    return handler_nodos.descargar_archivo(archivo)
 
 
 @app.post(root_link + "/subir")

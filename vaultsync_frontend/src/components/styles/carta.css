@@ -21,6 +21,14 @@
   padding: 0.75rem;
   transition: justify-content 0.4s ease;
 }
+.nombre-recortada {
+  white-space: nowrap;          /* Evita el salto de línea */
+  overflow: hidden;             /* Oculta lo que sobresale */
+  text-overflow: ellipsis;      /* Añade "..." al final si se corta */
+  display: block;               /* Asegura que funcione correctamente */
+  max-width: 100%;              /* Para evitar que se desborde horizontalmente */
+}
+
 
 
 

@@ -35,6 +35,17 @@ class VaultSyncService {
       }
     });
   }
+  subirArchivo(formData) {
+    return http.post("/subir", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+  }
+  descargarArchivo(archivo) {
+    return http.get(`/descargar?archivo=${encodeURIComponent(archivo)}`, {
+      responseType: 'blob', // Para que la respuesta sea un archivo descargable
+    });
+  }
+  
   
 }
 

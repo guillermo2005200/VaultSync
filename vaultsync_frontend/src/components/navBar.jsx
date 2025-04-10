@@ -7,10 +7,13 @@ import VaultSyncService from '../services/VaultSyncService';
 import { ContactContext } from '../context/userContext';
 import { RutaContext } from '../context/rutaContext';
 import { NodoContext } from '../context/nodoContext';
+import SubirArchivoModal from './SubirArchivoModal';
+
 
 function NavBar() {
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
   const [tipo, setTipo] = useState("");
   const { nodoActivo } = useContext(NodoContext);
   const { ruta } = useContext(RutaContext);
@@ -24,10 +27,14 @@ function NavBar() {
   const handleShow2 = () => {
     setShowModal2(true);
   };
+  const handleShow3 = () => {
+    setShowModal3(true);
+  };
 
   const handleClose = () => {
     setShowModal(false);
     setShowModal2(false);
+    setShowModal3(false);
     window.location.reload();
   };
 
@@ -43,6 +50,29 @@ function NavBar() {
         console.log(e);
       });
   };
+
+  const handleDescargar = () => {
+    const path = `${userInfo.email}/${ruta}/${nodoActivo}`;
+    VaultSyncService.descargarArchivo(path)
+      .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+  
+        // Nombre del archivo desde la ruta
+        const nombreArchivo = nodoActivo || 'archivo.txt';
+        link.setAttribute('download', nombreArchivo);
+  
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(e => {
+        console.error("Error al descargar archivo:", e);
+        alert("No se pudo descargar el archivo");
+      });
+  };
+  
 
   return (
     <>
@@ -88,10 +118,13 @@ function NavBar() {
           <a className="nav-link" href="#" onClick={() => handleShow2()}>✏️</a>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">📥</a>
+          <a className="nav-link" href="#" onClick={() => handleDescargar()}>📥</a>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="#">📤</a>
+          <a className="nav-link" href="#" onClick={() => handleShow3()}>📤</a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link" href="#">📟</a>
         </li>
       </ul>
     </div>
@@ -111,6 +144,7 @@ function NavBar() {
       {/* Modales */}
       <Anadir show={showModal} handleClose={handleClose} tipo={tipo} />
       <ModificarNombre show={showModal2} handleClose={handleClose} />
+      <SubirArchivoModal show={showModal3} handleClose={handleClose} />
     </>
   );
 }
