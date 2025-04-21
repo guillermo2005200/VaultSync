@@ -5,6 +5,9 @@ import { ContactContext } from '../context/userContext';
 import { RutaContext } from '../context/rutaContext';
 import { NodoContext } from '../context/nodoContext';
 import ModificarCEditarContenidoModal from './modificarContenido';
+import { TerminalContext } from '../context/terminalContext';
+import TerminalSimulada from './Terminal';
+
 
 
 function Nodos() {
@@ -14,6 +17,8 @@ function Nodos() {
   const {nodoActivo, setNodoActivo } = useContext(NodoContext);
   const [showModal, setShowModal] = useState(false);
   const [contenido, setContenido] = useState("");
+  const { setTerminal } = useContext(TerminalContext);
+  const { terminal } = useContext(TerminalContext);
 
 
   useEffect(() => {
@@ -88,21 +93,27 @@ function Nodos() {
   );
   
   return (
-    <>
-    <div className="container color1 text-white min-vh-100 min-vw-100 mt-5 pt-5" style={{ fontFamily: 'Cursive' }}>
-      <div className="row justify-content-center">
-        {renderCards(directorios)}
-      </div>
+  <>
+    {terminal ? (
+      <TerminalSimulada ruta={ruta} />
+    ) : (
+      // Vista normal de nodos
+      <div className="container color1 text-white min-vh-100 min-vw-100 mt-5 pt-5" style={{ fontFamily: 'Cursive' }}>
+        <div className="row justify-content-center">
+          {renderCards(directorios)}
+        </div>
 
-      <hr className="bg-white my-4" />
+        <hr className="bg-white my-4" />
 
-      <div className="row justify-content-center">
-        {renderCards(archivos)}
+        <div className="row justify-content-center">
+          {renderCards(archivos)}
+        </div>
       </div>
-    </div>
+    )}
+
     <ModificarCEditarContenidoModal show={showModal} handleClose={handleClose} cont={contenido} />
-    </>
-  );
+  </>
+);
 }
 
 export default Nodos;

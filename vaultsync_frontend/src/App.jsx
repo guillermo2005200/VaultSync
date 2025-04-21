@@ -6,6 +6,7 @@ import Nodos from './components/Nodos.jsx';
 import { ContactProvider } from './context/userContext';
 import { RutaProvider } from './context/rutaContext';
 import { NodoProvider } from './context/nodoContext';
+import { TerminalProvider } from "./context/terminalContext.jsx";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -13,7 +14,8 @@ function App() {
   return (
     <ContactProvider>
       <RutaProvider>
-        <NodoProvider> {/* 👈 Nuevo provider */}
+        <NodoProvider>
+          <TerminalProvider> 
           <Router>
             <NavBar />
             <Routes>
@@ -22,6 +24,7 @@ function App() {
               <Route path="/nodos" element={<Nodos />} />
             </Routes>
           </Router>
+          </TerminalProvider>
         </NodoProvider>
       </RutaProvider>
     </ContactProvider>
