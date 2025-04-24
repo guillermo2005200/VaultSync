@@ -45,8 +45,9 @@ class VaultSyncService {
       responseType: 'blob', // Para que la respuesta sea un archivo descargable
     });
   }
-  
-  
+  predecirComando(comando) {
+    return http.post(`/predecir?comando=${encodeURIComponent(comando)}`);
+  }
 }
 
 

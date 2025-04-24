@@ -271,7 +271,16 @@ function TerminalSimulada() {
         break;
 
       default:
-        setHistorial(h => [...h, `❌ Comando no reconocido: ${comandoBase}`]);
+        VaultSyncService.predecirComando(entrada).then(response => {
+          console.log(response.data);
+          const prediccion = response.data;
+          if (prediccion) {
+            setHistorial(h => [...h, `ese comando no existe, quizas has querido decir: ${prediccion.comando_corregido}`]);
+          } else {
+            setHistorial(h => [...h, `❌ Comando no reconocido: ${entrada}`]);
+          }
+        });
+        break;
     }
   };
 

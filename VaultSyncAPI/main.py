@@ -8,6 +8,7 @@ from repository.HandlerMySQL import DatabaseConnection
 from models.login_request import LoginRequest
 from services.email_handler import EmailSender
 from repository.HandlerNodos import HandlerNodos
+from services.modelo import ModeloComandosBERT
 
 
 app = FastAPI()
@@ -20,6 +21,8 @@ app.add_middleware(
 )
 
 root_link = "/api/v1"
+modelo = ModeloComandosBERT("services/comandos_12000_intercalado.csv")
+modelo.entrenar()
 @app.post(root_link + "/registrar")
 async def registrar(usuario: Usuario):
     db = DatabaseConnection()
@@ -122,3 +125,11 @@ async def crearcarpeta(archivo: str):
         return {"mensaje": "Carpeta creado correctamente"}
     else:
         return {"mensaje": "Error al crear carpeta"}
+
+@app.post(root_link + "/predecir")
+async def predecir_comando(comando: str):
+    try:
+        prediccion = modelo.predecir(comando)
+        return {"comando_original": comando, "comando_corregido": prediccion}
+    except Exception as e:
+        return {"error": f"Error al procesar el comando: {str(e)}"}
