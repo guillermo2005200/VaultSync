@@ -12,50 +12,84 @@ function InicioSesion() {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [direccion, setDireccion] = useState("");
+
+  const [loginError, setLoginError] = useState("");
+  const [signupError, setSignupError] = useState("");
+  const [recoveryError, setRecoveryError] = useState("");
+
   const navigate = useNavigate();
   const { setUserInfo } = useContext(ContactContext);
 
-
   function handleLogin(event) {
     event.preventDefault();
-    const login = {
-      email: email,
-      contrasena: password
-    };
-  
+    setLoginError("");
+
+    if (!email || !password) {
+      setLoginError("Por favor, completa el email y la contraseña.");
+      return;
+    }
+
+    const login = { email, contrasena: password };
+
     VaultSyncService.iniciarSesion(login)
       .then(response => {
         console.log(response.data);
-        setUserInfo({
-          email: email,
-          contrasena: password
-        });
-        navigate("/nodos"); // redirige a la ruta /nodos si el login es exitoso
+        setUserInfo({ email, contrasena: password });
+        navigate("/nodos");
       })
       .catch(error => {
         console.error("Error en login:", error);
+        setLoginError("Credenciales incorrectas o error en el servidor.");
       });
   }
 
   function handleSingUp(event) {
     event.preventDefault();
-    const singUp = {
-      email: email2,
-      contraseña: password2,
-      nombre: nombre,
-      apellido: apellido,
-      direccion: direccion
-    };
+    setSignupError("");
+
+    if (!email2 || !password2 || !nombre || !apellido || !direccion) {
+      setSignupError("Por favor, rellena todos los campos del registro.");
+      return;
+    }
+
+    const singUp = { email: email2, contraseña: password2, nombre, apellido, direccion };
+
     VaultSyncService.registrar(singUp)
-      .then(response => console.log(response.data))
-      .catch(error => console.error("Error en registro:", error));
+      .then(response => {
+        console.log(response.data);
+        setSignupError("Registro exitoso. Ahora puedes iniciar sesión.");
+        // Vaciar campos
+        setEmail2("");
+        setPassword2("");
+        setNombre("");
+        setApellido("");
+        setDireccion("");
+      })
+      .catch(error => {
+        console.error("Error en registro:", error);
+        setSignupError("Error en el registro. Inténtalo de nuevo más tarde.");
+      });
   }
 
   function handlePassword(event) {
     event.preventDefault();
+    setRecoveryError("");
+
+    if (!email) {
+      setRecoveryError("Introduce tu email para recuperar la contraseña.");
+      return;
+    }
+
     VaultSyncService.peticionPassword(email)
-      .then(response => console.log(response.data))
-      .catch(error => console.error("Error en recuperación:", error));
+      .then(response => {
+        console.log(response.data);
+        setRecoveryError("Correo enviado. Revisa tu bandeja.");
+        setEmail(""); // Limpiar email tras éxito
+      })
+      .catch(error => {
+        console.error("Error en recuperación:", error);
+        setRecoveryError("No se pudo enviar el correo de recuperación.");
+      });
   }
 
   return (
@@ -65,11 +99,12 @@ function InicioSesion() {
       <div className="signupinicio">
         <form>
           <label htmlFor="chkinicio" className="labelinicio" aria-hidden="true">Sign up</label>
-          <input type="text" placeholder="nombre" className="inputinicio" required onChange={(e) => setNombre(e.target.value)} />
-          <input type="text" placeholder="Apellidos" className="inputinicio" required onChange={(e) => setApellido(e.target.value)} />
-          <input type="email" placeholder="Email" className="inputinicio" required onChange={(e) => setEmail2(e.target.value)} />
-          <input type="text" placeholder="Direccion" className="inputinicio" required onChange={(e) => setDireccion(e.target.value)} />
-          <input type="password" placeholder="Contraseña" className="inputinicio" required onChange={(e) => setPassword2(e.target.value)} />
+          <input type="text" placeholder="nombre" className="inputinicio" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          <input type="text" placeholder="Apellidos" className="inputinicio" value={apellido} onChange={(e) => setApellido(e.target.value)} />
+          <input type="email" placeholder="Email" className="inputinicio" value={email2} onChange={(e) => setEmail2(e.target.value)} />
+          <input type="text" placeholder="Direccion" className="inputinicio" value={direccion} onChange={(e) => setDireccion(e.target.value)} />
+          <input type="password" placeholder="Contraseña" className="inputinicio" value={password2} onChange={(e) => setPassword2(e.target.value)} />
+          {signupError && <div className="text-danger text-center mt-2">{signupError}</div>}
           <button onClick={handleSingUp} className="buttoninicio">Sign up</button>
         </form>
       </div>
@@ -77,10 +112,12 @@ function InicioSesion() {
       <div className="logininicio">
         <form>
           <label htmlFor="chkinicio" className="labelinicio" aria-hidden="true">Login</label>
-          <input type="email" placeholder="Email" className="inputinicio" required onChange={(e) => setEmail(e.target.value)} />
-          <input type="password" placeholder="Contraseña" className="inputinicio" required onChange={(e) => setPassword(e.target.value)} />
+          <input type="email" placeholder="Email" className="inputinicio" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="password" placeholder="Contraseña" className="inputinicio" value={password} onChange={(e) => setPassword(e.target.value)} />
+          {loginError && <div className="text-danger text-center mt-2">{loginError}</div>}
           <button onClick={handleLogin} className="buttoninicio">Login</button>
           <button onClick={handlePassword} className="buttoninicio">Cambiar contraseña</button>
+          {recoveryError && <div className="text-danger text-center mt-2">{recoveryError}</div>}
         </form>
       </div>
     </div>

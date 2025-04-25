@@ -9,6 +9,7 @@ import { RutaContext } from '../context/rutaContext';
 import { NodoContext } from '../context/nodoContext';
 import { TerminalContext } from '../context/terminalContext.jsx';
 import SubirArchivoModal from './SubirArchivoModal';
+import { useLocation } from 'react-router-dom'; // <-- importar
 
 function NavBar() {
   const [showModal, setShowModal] = useState(false);
@@ -18,10 +19,12 @@ function NavBar() {
 
   const { nodoActivo } = useContext(NodoContext);
   const { ruta } = useContext(RutaContext);
+  const { setRuta } = useContext(RutaContext);
   const { userInfo } = useContext(ContactContext);
   const { setTerminal, terminal } = useContext(TerminalContext);
+  const location = useLocation();
 
-  if (terminal) return null; // ⛔ Oculta la navbar si terminal está activa
+  if (terminal || location.pathname === "/") return null;
 
   const handleShow = (nuevoTipo) => {
     setTipo(nuevoTipo);
@@ -90,7 +93,7 @@ function NavBar() {
           </button>
 
           <div className="position-absolute start-50 translate-middle-x">
-            <a className="navbar-brand" href="#">
+            <a className="navbar-brand" href="#" onClick={() => setRuta("")}>
               <img src={logo} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
             </a>
           </div>

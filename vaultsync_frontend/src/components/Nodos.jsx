@@ -93,27 +93,34 @@ function Nodos() {
   );
   
   return (
-  <>
-    {terminal ? (
-      <TerminalSimulada ruta={ruta} />
-    ) : (
-      // Vista normal de nodos
-      <div className="container color1 text-white min-vh-100 min-vw-100 mt-5 pt-5" style={{ fontFamily: 'Cursive' }}>
-        <div className="row justify-content-center">
-          {renderCards(directorios)}
+    <>
+      {terminal ? (
+        <TerminalSimulada ruta={ruta} />
+      ) : (
+        <div className="container color1 text-white min-vh-100 min-vw-100 mt-5 pt-5" style={{ fontFamily: 'Cursive' }}>
+          
+          {/* RUTA ACTUAL */}
+          <div className="text-center mb-4">
+            <span className="badge bg-secondary fs-6 px-3 py-2">
+              Ruta actual: /{userInfo.email+ruta}
+            </span>
+          </div>
+  
+          <div className="row justify-content-center">
+            {renderCards(directorios)}
+          </div>
+  
+          <hr className="bg-white my-4" />
+  
+          <div className="row justify-content-center">
+            {renderCards(archivos)}
+          </div>
         </div>
-
-        <hr className="bg-white my-4" />
-
-        <div className="row justify-content-center">
-          {renderCards(archivos)}
-        </div>
-      </div>
-    )}
-
-    <ModificarCEditarContenidoModal show={showModal} handleClose={handleClose} cont={contenido} />
-  </>
-);
+      )}
+  
+      <ModificarCEditarContenidoModal show={showModal} handleClose={handleClose} cont={contenido} />
+    </>
+  );  
 }
 
 export default Nodos;

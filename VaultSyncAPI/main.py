@@ -22,7 +22,7 @@ app.add_middleware(
 
 root_link = "/api/v1"
 modelo = ModeloComandosBERT("services/comandos_12000_intercalado.csv")
-modelo.entrenar()
+#modelo.entrenar()
 @app.post(root_link + "/registrar")
 async def registrar(usuario: Usuario):
     db = DatabaseConnection()

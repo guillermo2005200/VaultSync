@@ -18,18 +18,31 @@ class EmailSender:
         message["From"] = self.sender
         message["To"] = destinatario
 
-        # Cuerpo del mensaje
+        # Cuerpo del mensaje en HTML
         body = f"""
-            Hola {nombre},
-
-            Gracias por registrarte en VaultSync.
-
-            Accede a tu espacio en la nube desde: http://localhost:5173/
-
-            ¡Esperamos que disfrutes del servicio!
+        <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="https://ruta-del-logo.com/logo.png" alt="VaultSync" style="width: 150px; height: auto;">
+                </div>
+                <h2 style="color: #0056b3;">Hola {nombre},</h2>
+                <p>
+                    Gracias por registrarte en <strong>VaultSync</strong>. Estamos encantados de tenerte con nosotros.
+                </p>
+                <p>
+                    Accede a tu espacio en la nube desde: 
+                    <a href="http://localhost:5173/" style="color: #0056b3; text-decoration: none;">http://localhost:5173/</a>
+                </p>
+                <p>
+                    Si tienes alguna pregunta, no dudes en contactarnos.
+                </p>
+                <p>Atentamente,<br>El equipo de VaultSync</p>
+            </body>
+        </html>
         """
 
-        message.set_content(body)
+        message.add_alternative(body, subtype="html")
+
         # Envío
         try:
             self.server.ehlo()
@@ -41,7 +54,6 @@ class EmailSender:
         except Exception as ex:
             print("Error al enviar correo:", ex)
 
-
     def recuperacion_contrasena(self, destinatario):
         print(destinatario)
         # Crear el mensaje
@@ -52,16 +64,31 @@ class EmailSender:
 
         # Cuerpo del mensaje
         body = f"""
-            Hola,
-
-            Vemos que ha tenido problemas con su contraseña
-
-            Accede a la recuperación de contraseña desde aqui: http://localhost:5173/cambiar/{destinatario}
-
-            ¡Esperamos que disfrutes del servicio!
+        <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="https://ruta-del-logo.com/logo.png" alt="VaultSync" style="width: 150px; height: auto;">
+                </div>
+                <h2 style="color: #0056b3;">Recuperación de Contraseña</h2>
+                <p>
+                    Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en <strong>VaultSync</strong>.
+                </p>
+                <p>
+                    Para continuar con el proceso, haz clic en el siguiente enlace:
+                    <a href="http://localhost:5173/cambiar/{destinatario}" style="color: #0056b3; text-decoration: none;">
+                        Restablecer contraseña
+                    </a>
+                </p>
+                <p>
+                    Si no has solicitado este cambio, puedes ignorar este mensaje.
+                </p>
+                <p>Atentamente,<br>El equipo de VaultSync</p>
+            </body>
+        </html>
         """
 
-        message.set_content(body)
+        message.add_alternative(body, subtype="html")
+
         # Envío
         try:
             self.server.ehlo()

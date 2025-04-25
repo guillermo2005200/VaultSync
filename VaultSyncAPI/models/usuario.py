@@ -7,3 +7,4 @@ class Usuario(BaseModel):
     apellido: str
     direccion: str
     activo: bool = True
+    #foto: str
