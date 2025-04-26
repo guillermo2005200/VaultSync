@@ -42,7 +42,7 @@ function Anadir({ show, handleClose, tipo }) {
       centered
       dialogClassName="modal-transparente"
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="modal-header-dark" onClick={handleClose}>
         <Modal.Title>
           Crear {tipo} {tipo === "archivo" ? "📄" : "📁"}
         </Modal.Title>

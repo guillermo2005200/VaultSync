@@ -39,7 +39,7 @@ function EditarContenidoModal({ show, handleClose, cont }) {
       centered
       dialogClassName="modal-editar"
     >
-      <Modal.Header closeButton className="modal-header-dark">
+      <Modal.Header closeButton className="modal-header-dark" onClick={handleClose}>
         <Modal.Title>Editar archivo 📝</Modal.Title>
       </Modal.Header>
       <Modal.Body className="bg-dark text-white">

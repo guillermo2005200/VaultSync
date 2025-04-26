@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile
 from fastapi.params import Form, File
 from fastapi import Body
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, UploadFile, HTTPException
 
 from models.usuario import Usuario
 from repository.HandlerMySQL import DatabaseConnection
@@ -14,7 +15,7 @@ from services.modelo import ModeloComandosBERT
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # o ["*"] para permitir todo
+    allow_origins=["*"],  # O puedes poner ["http://vaultsync.hopto.org"] si quieres más seguro
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,7 +23,7 @@ app.add_middleware(
 
 root_link = "/api/v1"
 modelo = ModeloComandosBERT("services/comandos_12000_intercalado.csv")
-#modelo.entrenar()
+modelo.entrenar()
 @app.post(root_link + "/registrar")
 async def registrar(usuario: Usuario):
     db = DatabaseConnection()
@@ -46,7 +47,10 @@ async def iniciar_sesion(datos: LoginRequest):
     if db.verificar_credenciales(datos.email, datos.contrasena):
         return {"mensaje": "Inicio de sesión exitoso"}
     else:
-        return {"mensaje": "Credenciales incorrectas"}
+        raise HTTPException(
+            status_code=401,
+            detail="Credenciales incorrectas"
+        )
 
 @app.post(root_link + "/peticioncontrasena")
 async def petición_cambiar_contrasena(mail: str):

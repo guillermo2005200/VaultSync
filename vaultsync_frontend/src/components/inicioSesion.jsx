@@ -3,6 +3,8 @@ import React, { useState, useContext } from 'react';
 import VaultSyncService from '../services/VaultSyncService';
 import { useNavigate } from 'react-router-dom';
 import { ContactContext } from '../context/userContext';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function InicioSesion() {
   const [email, setEmail] = useState("");
@@ -93,10 +95,10 @@ function InicioSesion() {
   }
 
   return (
-    <div className="maininicio">
+    <div className="maininicio text-dark">
       <input type="checkbox" id="chkinicio" aria-hidden="true" />
 
-      <div className="signupinicio">
+      <div className="signupinicio text-dark">
         <form>
           <label htmlFor="chkinicio" className="labelinicio" aria-hidden="true">Sign up</label>
           <input type="text" placeholder="nombre" className="inputinicio" value={nombre} onChange={(e) => setNombre(e.target.value)} />

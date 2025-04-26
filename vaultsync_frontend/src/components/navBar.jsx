@@ -54,6 +54,10 @@ function NavBar() {
   };
 
   const handleDescargar = () => {
+    if (!nodoActivo) {
+      alert("No hay archivo seleccionado para descargar");
+      return;
+    }
     const path = `${userInfo.email}/${ruta}/${nodoActivo}`;
     VaultSyncService.descargarArchivo(path)
       .then(response => {
@@ -78,7 +82,7 @@ function NavBar() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top shadow">
+      <nav className="navbar navbar-expand-lg navbar-dark fixed-top shadow">
         <div className="container-fluid">
           <button
             className="navbar-toggler"
@@ -119,19 +123,30 @@ function NavBar() {
                 <a className="nav-link" href="#" onClick={handleShow3}>📤</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#" onClick={handleTerminal}>📟</a>
+                <a className="nav-link" href="" onClick={handleTerminal}>📟</a>
               </li>
             </ul>
           </div>
 
-          <div className="d-flex align-items-center ms-auto me-3">
+          <div className="d-flex align-items-center ms-auto me-3 dropdown">
             <img
               src="https://randomuser.me/api/portraits/men/75.jpg"
               alt="Perfil"
               height="40"
               width="40"
-              className="rounded-circle"
+              className="rounded-circle dropdown-toggle"
+              id="perfilDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style={{ cursor: 'pointer' }}
             />
+            <ul className="dropdown-menu dropdown-menu-end" style={{ background: "rgba(104, 104, 104, 0.3)" }} aria-labelledby="perfilDropdown">
+              <li>
+                <a className="dropdown-item text-white" href="#" onClick={() => { localStorage.clear(); window.location.href = "/"; }}>
+                  Cerrar sesión 👨
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>

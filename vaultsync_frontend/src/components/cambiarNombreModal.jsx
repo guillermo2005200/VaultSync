@@ -32,7 +32,7 @@ function ModificarNombre({ show, handleClose}) {
 
   return (
     <Modal show={show} onHide={handleClose} centered dialogClassName="modal-transparente">
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="modal-header-dark" onClick={handleClose}>
         <Modal.Title>Modificar nombre 📝</Modal.Title>
       </Modal.Header>
       <Modal.Body>

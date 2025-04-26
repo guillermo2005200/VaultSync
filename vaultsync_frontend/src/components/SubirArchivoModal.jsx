@@ -46,7 +46,7 @@ function SubirArchivoModal({ show, handleClose }) {
       centered
       dialogClassName="modal-transparente"
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="modal-header-dark" onClick={handleClose}>
         <Modal.Title>📤 Subir archivo</Modal.Title>
       </Modal.Header>
       <Modal.Body>
