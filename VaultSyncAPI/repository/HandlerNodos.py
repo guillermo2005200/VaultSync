@@ -7,6 +7,7 @@ from fastapi import UploadFile
 from models.nodo import Nodo  # Asegúrate de tener esta clase en models/nodo.py
 from fastapi.responses import FileResponse
 
+
 class HandlerNodos:
     def __init__(self, ruta_base: str = "../Raiz/"):
         self.ruta_base = ruta_base
@@ -32,7 +33,7 @@ class HandlerNodos:
 
         return nodos
 
-    def crear_carpeta(self,nombre: str):
+    def crear_carpeta(self, nombre: str):
         ruta_carpeta = os.path.join(self.ruta_base, nombre)
         try:
             os.makedirs(ruta_carpeta, exist_ok=True)
@@ -101,7 +102,6 @@ class HandlerNodos:
     def modificar_nombre(self, archivo: str, nombre: str) -> bool:
         ruta_archivo = os.path.join(self.ruta_base, archivo)
 
-
         nueva_ruta = "/".join(archivo.split("/")[:-1])
 
         # Unir la ruta base con el nuevo nombre dentro del mismo directorio
@@ -132,4 +132,13 @@ class HandlerNodos:
             return True
         except Exception as e:
             print(f"Error al crear el archivo: {e}")
+            return False
+
+
+    def verificar_cliente(self, ruta: str) -> bool:
+        try:
+            ruta_completa = os.path.join("../",self.ruta_base, ruta, ".cliente")
+            return os.path.exists(ruta_completa)
+        except Exception as e:
+            print(f"Error al verificar archivo .cliente: {e}")
             return False

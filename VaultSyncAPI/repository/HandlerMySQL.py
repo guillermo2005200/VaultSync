@@ -97,3 +97,17 @@ class DatabaseConnection:
             return False
         finally:
             self.close()
+
+    def recuperarCorreos(self):
+            try:
+                self.connect()
+                cursor = self.connection.cursor(dictionary=True)
+                sql = "SELECT email FROM usuarios"
+                cursor.execute(sql)
+                correos = [row["email"] for row in cursor.fetchall()]
+                return correos
+            except Error as e:
+                print(f"Error al recuperar correos: {e}")
+                return []
+            finally:
+                self.close()

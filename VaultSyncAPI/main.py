@@ -12,6 +12,7 @@ from repository.HandlerNodos import HandlerNodos
 from services.modelo import ModeloComandosBERT
 
 
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
