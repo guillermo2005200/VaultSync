@@ -12,11 +12,13 @@ class HandlerNodos:
     def __init__(self, ruta_base: str = "../Raiz/"):
         self.ruta_base = ruta_base
 
-    def obtener_nodos(self, nombre: str) -> List[Nodo]:
+    def obtener_nodos(self, nombre: str,cliente) -> List[Nodo]:
         nodos = []
 
-        # Construimos la ruta completa combinando la base con el nombre recibido
-        ruta_objetivo = os.path.join(self.ruta_base, nombre)
+        if not cliente:
+            ruta_objetivo = os.path.join(self.ruta_base, nombre)
+        else:
+            ruta_objetivo = os.path.join("../",self.ruta_base, nombre)
 
         if not os.path.exists(ruta_objetivo):
             print("La ruta no existe.")
@@ -137,8 +139,10 @@ class HandlerNodos:
 
     def verificar_cliente(self, ruta: str) -> bool:
         try:
-            ruta_completa = os.path.join("../",self.ruta_base, ruta, ".cliente")
+            ruta_completa = os.path.join(self.ruta_base, ruta, ".cliente")
+            print(ruta_completa)
             return os.path.exists(ruta_completa)
         except Exception as e:
             print(f"Error al verificar archivo .cliente: {e}")
             return False
+

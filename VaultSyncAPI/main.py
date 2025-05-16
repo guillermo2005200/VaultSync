@@ -10,6 +10,7 @@ from models.login_request import LoginRequest
 from services.email_handler import EmailSender
 from repository.HandlerNodos import HandlerNodos
 from services.modelo import ModeloComandosBERT
+from clienteSincronizacion.main import MonitorArchivos
 
 
 
@@ -24,7 +25,10 @@ app.add_middleware(
 
 root_link = "/api/v1"
 modelo = ModeloComandosBERT("services/comandos_12000_intercalado.csv")
-modelo.entrenar()
+#modelo.entrenar()
+monitorArchivos = MonitorArchivos()
+monitorArchivos.iniciar_vigilancia()
+monitorArchivos.monitorear_cambios()
 @app.post(root_link + "/registrar")
 async def registrar(usuario: Usuario):
     db = DatabaseConnection()
@@ -72,7 +76,7 @@ async def cambiar_contrasena(email: str,contrasena:str):
 @app.get(root_link + "/nodos")
 async def obtener_usuario(email: str):
     handler_nodos = HandlerNodos()
-    nodos = handler_nodos.obtener_nodos(email)
+    nodos = handler_nodos.obtener_nodos(email,False)
     return nodos
 
 
@@ -138,3 +142,12 @@ async def predecir_comando(comando: str):
         return {"comando_original": comando, "comando_corregido": prediccion}
     except Exception as e:
         return {"error": f"Error al procesar el comando: {str(e)}"}
+
+@app.post(root_link + "/predecir")
+async def comprobarCambios():
+    try:
+        if monitorArchivos.get_cont() > 1:
+            return monitorArchivos.get_nodos()
+
+    except Exception as e:
+        return {"error": f"Error al iniciar el monitoreo: {str(e)}"}

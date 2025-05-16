@@ -3,56 +3,54 @@ import os
 from repository.HandlerMySQL import DatabaseConnection
 from repository.HandlerNodos import HandlerNodos
 
-# Inicializa INotify
-inotify = INotify()
-watch_flags = flags.CREATE | flags.MODIFY | flags.DELETE | flags.MOVED_FROM | flags.MOVED_TO
+class MonitorArchivos:
+    def __init__(self, ruta_base="../Raiz/"):
+        # Inicializa INotify
+        self.inotify = INotify()
+        self.watch_flags = flags.CREATE | flags.MODIFY | flags.DELETE | flags.MOVED_FROM | flags.MOVED_TO
+        self.nodos = []
 
-# Instancias de conexión y lógica
-db = DatabaseConnection()
-handler_nodos = HandlerNodos()
+        # Instancias de conexión y lógica
+        self.db = DatabaseConnection()
+        self.handler_nodos = HandlerNodos()
 
-# Ruta base común (ajústala si estás en otra ubicación)
-ruta_base = os.path.abspath("../../Raiz")
+        self.cont=0
 
-# Lista para guardar rutas vigiladas
-rutas_vigiladas = []
-watch_to_path = {}
+        # Ruta base común
+        self.ruta_base = os.path.abspath(ruta_base)
 
-# Al agregar los watches, guardamos la relación
-for email in db.recuperarCorreos():
-    if handler_nodos.verificar_cliente(email):
-        ruta_usuario = os.path.join(ruta_base, email)
-        rutas_vigiladas.append(ruta_usuario)
-        wd = inotify.add_watch(ruta_usuario, watch_flags)
-        watch_to_path[wd] = ruta_usuario
-        print(f"Añadido a vigilancia: {ruta_usuario}")
-    else:
-        print(f"No se encontró .cliente en: {email}")
+        # Lista para guardar rutas vigiladas
+        self.rutas_vigiladas = []
+        self.watch_to_path = {}
 
-print("Vigilando carpetas de usuarios válidos...")
+    def iniciar_vigilancia(self):
+        """Inicia la vigilancia de las carpetas de usuarios"""
+        for email in self.db.recuperarCorreos():
+            if self.handler_nodos.verificar_cliente(email):
+                ruta_usuario = os.path.join(self.ruta_base, email)
+                self.rutas_vigiladas.append(ruta_usuario)
+                wd = self.inotify.add_watch(ruta_usuario, self.watch_flags)
+                self.watch_to_path[wd] = ruta_usuario
+                print(f"Añadido a vigilancia: {ruta_usuario}")
+            else:
+                print(f"No se encontró .cliente en: {email}")
 
-# Escucha eventos en todas las carpetas vigiladas
-watch_to_path = {}
+        print("Vigilando carpetas de usuarios válidos...")
 
-# Al agregar los watches, guardamos la relación
-for email in db.recuperarCorreos():
-    if handler_nodos.verificar_cliente(email):
-        ruta_usuario = os.path.join(ruta_base, email)
-        rutas_vigiladas.append(ruta_usuario)
-        wd = inotify.add_watch(ruta_usuario, watch_flags)
-        watch_to_path[wd] = ruta_usuario
-        print(f"Añadido a vigilancia: {ruta_usuario}")
-    else:
-        print(f"No se encontró .cliente en: {email}")
+    def monitorear_cambios(self):
+        """Monitorea continuamente los cambios en las carpetas vigiladas"""
+        while True:
+            for event in self.inotify.read():
+                ruta_base_evento = self.watch_to_path.get(event.wd, "Desconocido")
+                ruta_completa = os.path.join(ruta_base_evento, event.name)
+                # Extraemos el email de la ruta (último directorio de la ruta base)
+                email = os.path.basename(ruta_base_evento)
+                print(f"Email del usuario: {email}")
+                self.nodos=self.handler_nodos.obtener_nodos(email, False)
+                self.cont+=1
 
-print("Vigilando carpetas de usuarios válidos...")
+    def get_cont(self):
+        return self.cont
 
-# Escucha eventos en todas las carpetas vigiladas
-while True:
-    for event in inotify.read():
-        ruta_base_evento = watch_to_path.get(event.wd, "Desconocido")
-        ruta_completa = os.path.join(ruta_base_evento, event.name)
-        # Extraemos el email de la ruta (último directorio de la ruta base)
-        email = os.path.basename(ruta_base_evento)
-        print(f"Email del usuario: {email}")
-        handler_nodos.obtener_nodos(email)
+    def get_nodos(self):
+        return self.nodos
