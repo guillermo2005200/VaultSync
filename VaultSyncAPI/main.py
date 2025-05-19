@@ -3,6 +3,7 @@ from fastapi.params import Form, File
 from fastapi import Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, HTTPException
+import threading
 
 from models.usuario import Usuario
 from repository.HandlerMySQL import DatabaseConnection
@@ -28,7 +29,7 @@ modelo = ModeloComandosBERT("services/comandos_12000_intercalado.csv")
 #modelo.entrenar()
 monitorArchivos = MonitorArchivos()
 monitorArchivos.iniciar_vigilancia()
-monitorArchivos.monitorear_cambios()
+threading.Thread(target=monitorArchivos.monitorear_cambios, daemon=True).start()
 @app.post(root_link + "/registrar")
 async def registrar(usuario: Usuario):
     db = DatabaseConnection()
@@ -143,11 +144,12 @@ async def predecir_comando(comando: str):
     except Exception as e:
         return {"error": f"Error al procesar el comando: {str(e)}"}
 
-@app.post(root_link + "/predecir")
+@app.post(root_link + "/cambios")
 async def comprobarCambios():
     try:
-        if monitorArchivos.get_cont() > 1:
-            return monitorArchivos.get_nodos()
-
+        if monitorArchivos.get_cont() > 0:
+            monitorArchivos.set_cont(0)
+            return {"nodos": monitorArchivos.get_nodos()}
+        return {"mensaje": "No hay cambios nuevos"}
     except Exception as e:
         return {"error": f"Error al iniciar el monitoreo: {str(e)}"}

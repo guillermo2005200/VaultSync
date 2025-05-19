@@ -12,13 +12,15 @@ class HandlerNodos:
     def __init__(self, ruta_base: str = "../Raiz/"):
         self.ruta_base = ruta_base
 
-    def obtener_nodos(self, nombre: str,cliente) -> List[Nodo]:
+    from models.nodo import Nodo  # Asegúrate de importar bien tu modelo Pydantic
+
+    def obtener_nodos(self, nombre: str, cliente) -> List[Nodo]:
         nodos = []
 
         if not cliente:
             ruta_objetivo = os.path.join(self.ruta_base, nombre)
         else:
-            ruta_objetivo = os.path.join("../",self.ruta_base, nombre)
+            ruta_objetivo = os.path.join("../", self.ruta_base, nombre)
 
         if not os.path.exists(ruta_objetivo):
             print("La ruta no existe.")
@@ -26,12 +28,74 @@ class HandlerNodos:
 
         for item in os.listdir(ruta_objetivo):
             ruta_completa = os.path.join(ruta_objetivo, item)
+            ruta_relativa = os.path.join(nombre, item)
+
             if os.path.isdir(ruta_completa):
-                nodos.append(Nodo(nombre=item, contenido="", directorio=True))
+                nodo = Nodo(
+                    nombre=item,
+                    contenido="",
+                    directorio=True,
+                    ruta_relativa=ruta_relativa
+                )
             else:
                 with open(ruta_completa, "r", encoding="utf-8", errors="ignore") as f:
                     contenido = f.read()
-                nodos.append(Nodo(nombre=item, contenido=contenido, directorio=False))
+                nodo = Nodo(
+                    nombre=item,
+                    contenido=contenido,
+                    directorio=False,
+                    ruta_relativa=ruta_relativa
+                )
+
+            nodos.append(nodo)
+
+        return nodos
+
+    def obtener_nodos_recursivo(self, nombre: str, cliente) -> List[Nodo]:
+        nodos = []
+
+        if not cliente:
+            ruta_objetivo = os.path.join(self.ruta_base, nombre)
+        else:
+            ruta_objetivo = os.path.join("../", self.ruta_base, nombre)
+
+        if not os.path.exists(ruta_objetivo):
+            print("La ruta no existe.")
+            return nodos
+
+        for raiz, dirs, archivos in os.walk(ruta_objetivo):
+            # Calculamos ruta relativa a partir del usuario
+            ruta_relativa_base = os.path.relpath(raiz, self.ruta_base)
+
+            # Añadir carpetas
+            for dir_nombre in dirs:
+                ruta_relativa = os.path.join(ruta_relativa_base, dir_nombre)
+                nodo = Nodo(
+                    nombre=dir_nombre,
+                    contenido="",
+                    directorio=True,
+                    ruta_relativa=ruta_relativa
+                )
+                nodos.append(nodo)
+
+            # Añadir archivos
+            for archivo in archivos:
+                ruta_completa = os.path.join(raiz, archivo)
+                ruta_relativa = os.path.join(ruta_relativa_base, archivo)
+                try:
+                    with open(ruta_completa, "r", encoding="utf-8", errors="ignore") as f:
+                        contenido = f.read()
+                except Exception as e:
+                    print(f"No se pudo leer {ruta_completa}: {e}")
+                    contenido = ""
+
+                nodo = Nodo(
+                    nombre=archivo,
+                    contenido=contenido,
+                    directorio=False,
+                    ruta_relativa=ruta_relativa
+                )
+                nodos.append(nodo)
 
         return nodos
 

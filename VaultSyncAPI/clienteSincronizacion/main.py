@@ -46,7 +46,7 @@ class MonitorArchivos:
                 # Extraemos el email de la ruta (último directorio de la ruta base)
                 email = os.path.basename(ruta_base_evento)
                 print(f"Email del usuario: {email}")
-                self.nodos=self.handler_nodos.obtener_nodos(email, False)
+                self.nodos=self.handler_nodos.obtener_nodos_recursivo(email, False)
                 self.cont+=1
 
     def get_cont(self):
@@ -54,3 +54,6 @@ class MonitorArchivos:
 
     def get_nodos(self):
         return self.nodos
+
+    def set_cont(self, cont):
+        self.cont=cont
