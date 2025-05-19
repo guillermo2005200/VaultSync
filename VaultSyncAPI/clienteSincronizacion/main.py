@@ -9,12 +9,12 @@ class MonitorArchivos:
         self.inotify = INotify()
         self.watch_flags = flags.CREATE | flags.MODIFY | flags.DELETE | flags.MOVED_FROM | flags.MOVED_TO
         self.nodos = []
+        self.emails = []
 
         # Instancias de conexión y lógica
         self.db = DatabaseConnection()
         self.handler_nodos = HandlerNodos()
 
-        self.cont=0
 
         # Ruta base común
         self.ruta_base = os.path.abspath(ruta_base)
@@ -46,14 +46,14 @@ class MonitorArchivos:
                 # Extraemos el email de la ruta (último directorio de la ruta base)
                 email = os.path.basename(ruta_base_evento)
                 print(f"Email del usuario: {email}")
+                self.emails.append(email)
                 self.nodos=self.handler_nodos.obtener_nodos_recursivo(email, False)
-                self.cont+=1
-
-    def get_cont(self):
-        return self.cont
 
     def get_nodos(self):
         return self.nodos
 
-    def set_cont(self, cont):
-        self.cont=cont
+    def get_emails(self):
+        return self.emails
+
+    def set_emails(self, emails):
+        self.emails=emails

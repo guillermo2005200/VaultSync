@@ -145,10 +145,12 @@ async def predecir_comando(comando: str):
         return {"error": f"Error al procesar el comando: {str(e)}"}
 
 @app.post(root_link + "/cambios")
-async def comprobarCambios():
+async def comprobarCambios(email: str):
     try:
-        if monitorArchivos.get_cont() > 0:
-            monitorArchivos.set_cont(0)
+        emails= monitorArchivos.get_emails()
+        if email in emails:
+            emails.remove(email)
+            monitorArchivos.set_emails(emails)
             return {"nodos": monitorArchivos.get_nodos()}
         return {"mensaje": "No hay cambios nuevos"}
     except Exception as e:
