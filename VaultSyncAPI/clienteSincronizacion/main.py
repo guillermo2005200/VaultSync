@@ -18,6 +18,7 @@ class MonitorArchivos:
 
         # Ruta base común
         self.ruta_base = os.path.abspath(ruta_base)
+        self.realizar = True
 
         # Lista para guardar rutas vigiladas
         self.rutas_vigiladas = []
@@ -46,7 +47,8 @@ class MonitorArchivos:
                 # Extraemos el email de la ruta (último directorio de la ruta base)
                 email = os.path.basename(ruta_base_evento)
                 print(f"Email del usuario: {email}")
-                self.emails.append(email)
+                if self.realizar:
+                    self.emails.append(email)
                 self.nodos=self.handler_nodos.obtener_nodos_recursivo(email, False)
 
     def get_nodos(self):
@@ -57,3 +59,6 @@ class MonitorArchivos:
 
     def set_emails(self, emails):
         self.emails=emails
+
+    def set_realizar(self, realizar):
+        self.realizar=realizar

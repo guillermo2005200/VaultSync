@@ -6,6 +6,7 @@ from fastapi import FastAPI, UploadFile, HTTPException
 import threading
 
 from models.usuario import Usuario
+from models.nodo import Nodo
 from repository.HandlerMySQL import DatabaseConnection
 from models.login_request import LoginRequest
 from services.email_handler import EmailSender
@@ -147,7 +148,7 @@ async def predecir_comando(comando: str):
 @app.post(root_link + "/cambios")
 async def comprobarCambios(email: str):
     try:
-        emails= monitorArchivos.get_emails()
+        emails = monitorArchivos.get_emails()
         if email in emails:
             emails.remove(email)
             monitorArchivos.set_emails(emails)
@@ -155,3 +156,16 @@ async def comprobarCambios(email: str):
         return {"mensaje": "No hay cambios nuevos"}
     except Exception as e:
         return {"error": f"Error al iniciar el monitoreo: {str(e)}"}
+
+@app.post(root_link + "/cambios2")
+async def recibir_cambios(datos: Nodo):
+    try:
+        monitorArchivos.set_realizar(False)
+        handlerNodos = HandlerNodos()
+        handlerNodos.sincronizar(datos.nodos)
+        monitorArchivos.set_realizar(True)
+        return {"mensaje": "Sincronización exitosa"}
+    except Exception as e:
+        return {"error": f"Error al sincronizar"}
+
+

@@ -210,3 +210,24 @@ class HandlerNodos:
             print(f"Error al verificar archivo .cliente: {e}")
             return False
 
+
+    def sincronizar(self, nodos):
+        ruta_objetivo = os.path.join(self.ruta_base)
+        shutil.rmtree(ruta_objetivo)
+        ruta_objetivo.mkdir(parents=True, exist_ok=True)
+
+        for nodo in nodos:
+            ruta_relativa = nodo["ruta_relativa"]
+            contenido = nodo.get("contenido", "")
+            es_directorio = nodo.get("directorio", False)
+
+            ruta_completa = ruta_objetivo / ruta_relativa
+
+            if es_directorio:
+                ruta_completa.mkdir(parents=True, exist_ok=True)
+                print(f"Carpeta creada: {ruta_relativa}")
+            else:
+                ruta_completa.parent.mkdir(parents=True, exist_ok=True)
+                with open(ruta_completa, "w", encoding="utf-8") as archivo:
+                    archivo.write(contenido)
+                print(f"Archivo creado: {ruta_relativa}")
