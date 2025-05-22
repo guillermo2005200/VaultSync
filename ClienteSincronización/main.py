@@ -12,7 +12,7 @@ EMAIL = "string@gmail.com"  # <-- query param
 
 
 class ClienteSincronizador:
-    def __init__(self, url_api,url_api2, ruta_local, email, intervalo=5):
+    def __init__(self, url_api, url_api2, ruta_local, email, intervalo=5):
         self.watch_to_path = []
         self.url_api = url_api
         self.url_api2 = url_api2
@@ -21,13 +21,13 @@ class ClienteSincronizador:
         self.intervalo = intervalo
         self.inotify = INotify()
         self.watch_flags = flags.CREATE | flags.MODIFY | flags.DELETE | flags.MOVED_FROM | flags.MOVED_TO
+        self.realizar = True
 
         if not self.ruta_local.exists():
             self.ruta_local.mkdir(parents=True)
 
     def obtener_nodos_recursivo(self):
         nodos = []
-
 
         ruta_objetivo = os.path.join(self.ruta_local)
 
@@ -78,9 +78,11 @@ class ClienteSincronizador:
                 datos = respuesta.json()
                 if "nodos" in datos:
                     print("Se detectaron cambios:", datos["nodos"])
+                    self.realizar = False
                     self.sincronizar(datos["nodos"])
                 else:
                     print(datos["mensaje"])
+                    self.realizar = True
             else:
                 print(f"Error en la consulta: {respuesta.status_code}")
         except Exception as e:
@@ -117,10 +119,13 @@ class ClienteSincronizador:
     def consultar_cambios_propios(self):
         try:
             events = self.inotify.read(timeout=100)  # Lee eventos durante 100ms máximo
-            for event in events:
-                print(f"Evento detectado: {flags.from_mask(event.mask)} en {event.name}")
-                nodos= self.obtener_nodos_recursivo()
-                respuesta = requests.post(self.url_api, params={"nodos": nodos})
+            if self.realizar:
+                for event in events:
+                    print(f"Evento detectado: {flags.from_mask(event.mask)} en {event.name}")
+                    nodos = self.obtener_nodos_recursivo()
+                    response = requests.post(self.url_api2, params={"email": self.email},
+                                             json=nodos)  # CORRECTO: esto sí va en el body como JSON
+                    print(response.json())
         except Exception as e:
             print(f"Error monitoreando cambios locales: {e}")
 
@@ -128,12 +133,10 @@ class ClienteSincronizador:
         print("Iniciando sincronización del cliente...")
         self.iniciar_vigilancia_recursiva()
         while True:
-            self.consultar_cambios()
             self.consultar_cambios_propios()
+            #self.consultar_cambios()
             time.sleep(self.intervalo)
 
-
-
 if __name__ == "__main__":
-    cliente = ClienteSincronizador(URL_API, URL_API2,RUTA_LOCAL, EMAIL, intervalo=5)
+    cliente = ClienteSincronizador(URL_API, URL_API2, RUTA_LOCAL, EMAIL, intervalo=5)
     cliente.iniciar()

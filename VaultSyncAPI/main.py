@@ -158,14 +158,16 @@ async def comprobarCambios(email: str):
         return {"error": f"Error al iniciar el monitoreo: {str(e)}"}
 
 @app.post(root_link + "/cambios2")
-async def recibir_cambios(datos: Nodo):
+async def recibir_cambios(datos: list[dict], email: str):
     try:
         monitorArchivos.set_realizar(False)
-        handlerNodos = HandlerNodos()
-        handlerNodos.sincronizar(datos.nodos)
+        handler_nodos = HandlerNodos()
+        handler_nodos.sincronizar(datos,email)
         monitorArchivos.set_realizar(True)
         return {"mensaje": "Sincronización exitosa"}
     except Exception as e:
+        print(e)
         return {"error": f"Error al sincronizar"}
+
 
 
