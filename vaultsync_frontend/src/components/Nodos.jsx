@@ -23,6 +23,11 @@ function Nodos() {
 
   useEffect(() => {
     retrieveNodos();
+    const interval = setInterval(() => {
+      retrieveNodos();
+    }, 2000); // cada 5 segundos
+
+    return () => clearInterval(interval);
   }, [ruta]); // se ejecuta cada vez que cambia la ruta
   
   const handleClose = () => {
@@ -74,7 +79,7 @@ function Nodos() {
   
   
   const directorios = nodos.filter(n => n.directorio);
-  const archivos = nodos.filter(n => !n.directorio);
+  const archivos = nodos.filter(n => !n.directorio && !n.nombre.startsWith('.'));
 
   const renderCards = (lista) => (   
     lista.map((nodo, index) => (

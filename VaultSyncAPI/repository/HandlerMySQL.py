@@ -28,15 +28,16 @@ class DatabaseConnection:
         try:
             self.connect()
             cursor = self.connection.cursor()
-            sql = """INSERT INTO usuarios (email, contraseña, nombre, apellido, direccion, activo)
-                     VALUES (%s, %s, %s, %s, %s, %s)"""
+            sql = """INSERT INTO usuarios (email, contraseña, nombre, apellido, direccion, activo, foto)
+                     VALUES (%s, %s, %s, %s, %s, %s, %s)"""
             valores = (
                 usuario.email,
                 usuario.contraseña,
                 usuario.nombre,
                 usuario.apellido,
                 usuario.direccion,
-                usuario.activo
+                usuario.activo,
+                usuario.foto
             )
             cursor.execute(sql, valores)
             self.connection.commit()
@@ -111,3 +112,23 @@ class DatabaseConnection:
                 return []
             finally:
                 self.close()
+
+    def recuperar_foto(self, email):
+        try:
+            self.connect()
+            cursor = self.connection.cursor(dictionary=True)
+            sql = "SELECT foto FROM usuarios WHERE email = %s"
+            cursor.execute(sql, (email,))
+            usuario = cursor.fetchone()
+
+            if usuario is None:
+                print("Usuario no encontrado.")
+                return None
+            else:
+                return usuario["foto"]
+
+        except Error as e:
+            print(f"Error al recuperar la foto: {e}")
+            return None
+        finally:
+            self.close()

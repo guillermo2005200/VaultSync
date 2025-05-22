@@ -130,7 +130,7 @@ function NavBar() {
 
           <div className="d-flex align-items-center ms-auto me-3 dropdown">
             <img
-              src="https://randomuser.me/api/portraits/men/75.jpg"
+              src={userInfo.foto || "https://via.placeholder.com/40"}
               alt="Perfil"
               height="40"
               width="40"

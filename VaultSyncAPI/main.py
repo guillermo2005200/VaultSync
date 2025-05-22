@@ -52,7 +52,8 @@ async def registrar(usuario: Usuario):
 async def iniciar_sesion(datos: LoginRequest):
     db = DatabaseConnection()
     if db.verificar_credenciales(datos.email, datos.contrasena):
-        return {"mensaje": "Inicio de sesión exitoso"}
+        foto=db.recuperar_foto(datos.email)
+        return {"foto": foto}
     else:
         raise HTTPException(
             status_code=401,

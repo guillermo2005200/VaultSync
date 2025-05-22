@@ -1,5 +1,5 @@
 import './styles/iniciosesion.css';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import VaultSyncService from '../services/VaultSyncService';
 import { useNavigate } from 'react-router-dom';
 import { ContactContext } from '../context/userContext';
@@ -14,6 +14,7 @@ function InicioSesion() {
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [direccion, setDireccion] = useState("");
+  const [foto, setFoto] = useState("");
 
   const [loginError, setLoginError] = useState("");
   const [signupError, setSignupError] = useState("");
@@ -21,7 +22,12 @@ function InicioSesion() {
 
   const navigate = useNavigate();
   const { setUserInfo } = useContext(ContactContext);
-
+  const { userInfo } = useContext(ContactContext);
+  useEffect(() => {
+    if (userInfo.email) {
+      navigate("/nodos");
+    }
+  }, [setUserInfo, navigate]);
   function handleLogin(event) {
     event.preventDefault();
     setLoginError("");
@@ -36,7 +42,7 @@ function InicioSesion() {
     VaultSyncService.iniciarSesion(login)
       .then(response => {
         console.log(response.data);
-        setUserInfo({ email, contrasena: password });
+        setUserInfo({ email, contrasena: password, foto: response.data.foto });
         navigate("/nodos");
       })
       .catch(error => {
@@ -49,12 +55,12 @@ function InicioSesion() {
     event.preventDefault();
     setSignupError("");
 
-    if (!email2 || !password2 || !nombre || !apellido || !direccion) {
+    if (!email2 || !password2 || !nombre || !apellido || !direccion || !foto) {
       setSignupError("Por favor, rellena todos los campos del registro.");
       return;
     }
 
-    const singUp = { email: email2, contraseña: password2, nombre, apellido, direccion };
+    const singUp = { email: email2, contraseña: password2, nombre, apellido, direccion, foto };
 
     VaultSyncService.registrar(singUp)
       .then(response => {
@@ -66,6 +72,7 @@ function InicioSesion() {
         setNombre("");
         setApellido("");
         setDireccion("");
+        setFoto("");
       })
       .catch(error => {
         console.error("Error en registro:", error);
@@ -102,6 +109,7 @@ function InicioSesion() {
         <form>
           <label htmlFor="chkinicio" className="labelinicio" aria-hidden="true">Sign up</label>
           <input type="text" placeholder="nombre" className="inputinicio" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+           <input type="text" placeholder="foto" className="inputinicio" value={foto} onChange={(e) => setFoto(e.target.value)} />
           <input type="text" placeholder="Apellidos" className="inputinicio" value={apellido} onChange={(e) => setApellido(e.target.value)} />
           <input type="email" placeholder="Email" className="inputinicio" value={email2} onChange={(e) => setEmail2(e.target.value)} />
           <input type="text" placeholder="Direccion" className="inputinicio" value={direccion} onChange={(e) => setDireccion(e.target.value)} />
