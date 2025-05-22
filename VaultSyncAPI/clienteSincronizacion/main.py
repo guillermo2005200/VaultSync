@@ -46,7 +46,7 @@ class MonitorArchivos:
                 ruta_completa = os.path.join(ruta_base_evento, event.name)
                 # Extraemos el email de la ruta (último directorio de la ruta base)
                 email = os.path.basename(ruta_base_evento)
-                if self.realizar:
+                if self.realizar and email not in self.emails:
                     self.emails.append(email)
                 self.nodos=self.handler_nodos.obtener_nodos_recursivo(email, False)
 

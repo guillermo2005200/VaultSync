@@ -52,6 +52,7 @@ class ClienteSincronizador:
             for archivo in archivos:
                 ruta_completa = os.path.join(raiz, archivo)
                 ruta_relativa = os.path.join(ruta_relativa_base, archivo)
+                print(archivo)
                 try:
                     with open(ruta_completa, "r", encoding="utf-8", errors="ignore") as f:
                         contenido = f.read()
@@ -61,7 +62,7 @@ class ClienteSincronizador:
 
                 nodo = {
                     "nombre": archivo,
-                    "contenido": "",
+                    "contenido": contenido,
                     "directorio": False,
                     "ruta_relativa": ruta_relativa
                 }
@@ -81,18 +82,24 @@ class ClienteSincronizador:
                     self.realizar = False
                     self.sincronizar(datos["nodos"])
                 else:
-                    print(datos["mensaje"])
                     self.realizar = True
+                    print("hola")
+                    print(datos["mensaje"])
             else:
                 print(f"Error en la consulta: {respuesta.status_code}")
         except Exception as e:
             print(f"Error al conectar con el servidor: {e}")
 
     def sincronizar(self, nodos):
-        if self.ruta_local.exists():
-            shutil.rmtree(self.ruta_local)
-        self.ruta_local.mkdir(parents=True, exist_ok=True)
+        # Eliminar contenido existente, manteniendo el directorio base
+        for item in os.listdir(self.ruta_local):
+            ruta_item = os.path.join(self.ruta_local, item)
+            if os.path.isfile(ruta_item):
+                os.remove(ruta_item)
+            elif os.path.isdir(ruta_item):
+                shutil.rmtree(ruta_item)
 
+        # Sincronizar nuevos archivos y directorios
         for nodo in nodos:
             ruta_relativa = nodo["ruta_relativa"]
             contenido = nodo.get("contenido", "")
@@ -108,6 +115,7 @@ class ClienteSincronizador:
                 with open(ruta_completa, "w", encoding="utf-8") as archivo:
                     archivo.write(contenido)
                 print(f"Archivo creado: {ruta_relativa}")
+        self.iniciar_vigilancia_recursiva()
 
     def iniciar_vigilancia_recursiva(self):
         self.watch_to_path = {}
@@ -119,8 +127,8 @@ class ClienteSincronizador:
     def consultar_cambios_propios(self):
         try:
             events = self.inotify.read(timeout=100)  # Lee eventos durante 100ms máximo
-            if self.realizar:
-                for event in events:
+            for event in events:
+                if self.realizar:
                     print(f"Evento detectado: {flags.from_mask(event.mask)} en {event.name}")
                     nodos = self.obtener_nodos_recursivo()
                     response = requests.post(self.url_api2, params={"email": self.email},
@@ -134,8 +142,9 @@ class ClienteSincronizador:
         self.iniciar_vigilancia_recursiva()
         while True:
             self.consultar_cambios_propios()
-            #self.consultar_cambios()
+            self.consultar_cambios()
             time.sleep(self.intervalo)
+
 
 if __name__ == "__main__":
     cliente = ClienteSincronizador(URL_API, URL_API2, RUTA_LOCAL, EMAIL, intervalo=5)

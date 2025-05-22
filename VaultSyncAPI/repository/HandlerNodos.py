@@ -215,6 +215,7 @@ class HandlerNodos:
         ruta_objetivo = os.path.join(self.ruta_base)
         ruta_objetivo2 = os.path.join(self.ruta_base, email)
         shutil.rmtree(ruta_objetivo2)
+        print(nodos)
         for nodo in nodos:
             ruta_relativa = nodo["ruta_relativa"]
             contenido = nodo.get("contenido", "")

@@ -149,9 +149,11 @@ async def predecir_comando(comando: str):
 async def comprobarCambios(email: str):
     try:
         emails = monitorArchivos.get_emails()
+        print(emails)
         if email in emails:
             emails.remove(email)
             monitorArchivos.set_emails(emails)
+            print("Estoy llegando")
             return {"nodos": monitorArchivos.get_nodos()}
         return {"mensaje": "No hay cambios nuevos"}
     except Exception as e:
@@ -163,11 +165,12 @@ async def recibir_cambios(datos: list[dict], email: str):
         monitorArchivos.set_realizar(False)
         handler_nodos = HandlerNodos()
         handler_nodos.sincronizar(datos,email)
-        monitorArchivos.set_realizar(True)
+        monitorArchivos.iniciar_vigilancia()
+        monitorArchivos.set_realizar(True)  # Reactivamos la detección de cambios
         return {"mensaje": "Sincronización exitosa"}
     except Exception as e:
         print(e)
+        monitorArchivos.set_realizar(True)  # También lo reactivamos en caso de error
         return {"error": f"Error al sincronizar"}
-
 
 
