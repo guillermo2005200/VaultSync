@@ -6,7 +6,8 @@ body {
 	align-items: center;
 	min-height: 100vh;
 	font-family: 'Jost', sans-serif;
-	background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+	background: url("./../images/azul.jpg") no-repeat center center fixed;
+	background-size: cover;
 }
 
 .maininicio {
@@ -30,7 +31,7 @@ body {
 }
 
 .labelinicio {
-	color: #fff;
+	color: #88bbff;
 	font-size: 1.8em;
 	justify-content: center;
 	display: flex;
@@ -65,7 +66,7 @@ body {
 	justify-content: center;
 	display: block;
 	color: #fff;
-	background: #573b8a;
+	background: #88bbff;
 	font-size: 1em;
 	font-weight: bold;
 	margin-top: 30px;
@@ -77,7 +78,7 @@ body {
 }
 
 .buttoninicio:hover {
-	background: #6d44b8;
+	background: #88bbff;
 }
 
 .logininicio {
@@ -89,7 +90,7 @@ body {
 }
 
 .logininicio .labelinicio {
-	color: #573b8a;
+	color: #88bbff;
 	transform: scale(.6);
 }
 

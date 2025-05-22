@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import './styles/navbar.css';
-import logo from './images/logo.png';
+import image from './images/image.png';
 import Anadir from './anadirmodal';
 import ModificarNombre from './cambiarNombreModal';
 import VaultSyncService from '../services/VaultSyncService';
@@ -98,14 +98,14 @@ function NavBar() {
 
           <div className="position-absolute start-50 translate-middle-x">
             <a className="navbar-brand" href="#" onClick={() => setRuta("")}>
-              <img src={logo} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
+              <img src={image} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
             </a>
           </div>
 
           <div className="collapse navbar-collapse" id="navbarContenido">
             <ul className="navbar-nav d-flex flex-row gap-3">
               <li className="nav-item">
-                <a className="nav-link" href="#" onClick={() => handleShow("archivo")}>➕📄</a>
+                <a className="fw-bold nav-link" href="#" onClick={() => handleShow("archivo")}>➕📄</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#" onClick={() => handleShow("carpeta")}>➕📁</a>
@@ -140,9 +140,9 @@ function NavBar() {
               aria-expanded="false"
               style={{ cursor: 'pointer' }}
             />
-            <ul className="dropdown-menu dropdown-menu-end" style={{ background: "rgba(104, 104, 104, 0.3)" }} aria-labelledby="perfilDropdown">
+            <ul className="dropdown-menu dropdown-menu-end" style={{ background: "rgba(104, 104, 104, 0.5)" }} aria-labelledby="perfilDropdown">
               <li>
-                <a className="dropdown-item text-white" href="#" onClick={() => { localStorage.clear(); window.location.href = "/"; }}>
+                <a className="dropdown-item text-dark" href="#" onClick={() => { localStorage.clear(); window.location.href = "/"; }}>
                   Cerrar sesión 👨
                 </a>
               </li>
