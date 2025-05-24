@@ -1,13 +1,15 @@
 import mysql.connector
 from mysql.connector import Error
+import os
 
 class DatabaseConnection:
     def __init__(self):
         self.config = {
-            'host': 'localhost',
-            'user': 'VaultSync',
-            'password': 'VaultSync123!',
-            'database': 'vaultsync_db'
+            'host': os.getenv('DB_HOST', 'localhost'),
+            'port': int(os.getenv('DB_PORT', '3306')),
+            'user': os.getenv('DB_USER', 'VaultSync'),
+            'password': os.getenv('DB_PASSWORD', 'VaultSync123!'),
+            'database': os.getenv('DB_NAME', 'vaultsync_db'),
         }
         self.connection = None
 
