@@ -9,24 +9,26 @@ import { RutaContext } from '../context/rutaContext';
 import { NodoContext } from '../context/nodoContext';
 import { TerminalContext } from '../context/terminalContext.jsx';
 import SubirArchivoModal from './SubirArchivoModal';
-import { useLocation } from 'react-router-dom'; // <-- importar
+import { useLocation } from 'react-router-dom';
+
+const API_BASE = 'https://tuservidor.com';
 
 function NavBar() {
   const [showModal, setShowModal] = useState(false);
   const [showModal2, setShowModal2] = useState(false);
   const [showModal3, setShowModal3] = useState(false);
-  const [tipo, setTipo] = useState("");
+  const [tipo, setTipo] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const { nodoActivo } = useContext(NodoContext);
-  const { ruta } = useContext(RutaContext);
-  const { setRuta } = useContext(RutaContext);
+  const { ruta, setRuta } = useContext(RutaContext);
   const { userInfo } = useContext(ContactContext);
   const { setTerminal, terminal } = useContext(TerminalContext);
   const location = useLocation();
 
-  if (terminal || location.pathname === "/") return null;
+  if (terminal || location.pathname === '/') return null;
 
-  const handleShow = (nuevoTipo) => {
+  const handleShow = nuevoTipo => {
     setTipo(nuevoTipo);
     setShowModal(true);
   };
@@ -45,17 +47,26 @@ function NavBar() {
     const path = `${userInfo.email}/${ruta}/${nodoActivo}`;
     VaultSyncService.eliminarArchivo(path)
       .then(response => {
-        console.log("Archivo eliminado:", response.data);
+        console.log('Archivo eliminado:', response.data);
         window.location.reload();
       })
-      .catch(e => {
-        console.log(e);
-      });
+      .catch(e => console.error(e));
+  };
+
+  const handleCliente = () => {
+    const url = `${API_BASE}/cliente?email=${encodeURIComponent(userInfo.email)}`;
+    alert('Descargando cliente, por favor espera unos segundos...');
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleDescargar = () => {
     if (!nodoActivo) {
-      alert("No hay archivo seleccionado para descargar");
+      alert('No hay archivo seleccionado para descargar');
       return;
     }
     const path = `${userInfo.email}/${ruta}/${nodoActivo}`;
@@ -64,21 +75,18 @@ function NavBar() {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        const nombreArchivo = nodoActivo || 'archivo.txt';
-        link.setAttribute('download', nombreArchivo);
+        link.setAttribute('download', nodoActivo || 'archivo.txt');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       })
       .catch(e => {
-        console.error("Error al descargar archivo:", e);
-        alert("No se pudo descargar el archivo");
+        console.error('Error al descargar archivo:', e);
+        alert('No se pudo descargar el archivo');
       });
   };
 
-  const handleTerminal = () => {
-    setTerminal(true);
-  };
+  const handleTerminal = () => setTerminal(true);
 
   return (
     <>
@@ -93,11 +101,11 @@ function NavBar() {
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <span className="navbar-toggler-icon"></span>
+            <span className="navbar-toggler-icon" />
           </button>
 
           <div className="position-absolute start-50 translate-middle-x">
-            <a className="navbar-brand" href="#" onClick={() => setRuta("")}>
+            <a className="navbar-brand" href="#" onClick={() => setRuta('')}>  
               <img src={image} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
             </a>
           </div>
@@ -105,10 +113,10 @@ function NavBar() {
           <div className="collapse navbar-collapse" id="navbarContenido">
             <ul className="navbar-nav d-flex flex-row gap-3">
               <li className="nav-item">
-                <a className="fw-bold nav-link" href="#" onClick={() => handleShow("archivo")}>➕📄</a>
+                <a className="fw-bold nav-link" href="#" onClick={() => handleShow('archivo')}>➕📄</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#" onClick={() => handleShow("carpeta")}>➕📁</a>
+                <a className="nav-link" href="#" onClick={() => handleShow('carpeta')}>➕📁</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#" onClick={handleliminar}>🗑️</a>
@@ -123,14 +131,17 @@ function NavBar() {
                 <a className="nav-link" href="#" onClick={handleShow3}>📤</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="" onClick={handleTerminal}>📟</a>
+                <a className="nav-link" href="#" onClick={handleTerminal}>📟</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#" onClick={handleCliente}>⏳</a>
               </li>
             </ul>
           </div>
 
           <div className="d-flex align-items-center ms-auto me-3 dropdown">
             <img
-              src={userInfo.foto || "https://via.placeholder.com/40"}
+              src={userInfo.foto || 'https://via.placeholder.com/40'}
               alt="Perfil"
               height="40"
               width="40"
@@ -140,9 +151,9 @@ function NavBar() {
               aria-expanded="false"
               style={{ cursor: 'pointer' }}
             />
-            <ul className="dropdown-menu dropdown-menu-end" style={{ background: "rgba(104, 104, 104, 0.5)" }} aria-labelledby="perfilDropdown">
+            <ul className="dropdown-menu dropdown-menu-end" style={{ background: 'rgba(104, 104, 104, 0.5)' }} aria-labelledby="perfilDropdown">
               <li>
-                <a className="dropdown-item text-dark" href="#" onClick={() => { localStorage.clear(); window.location.href = "/"; }}>
+                <a className="dropdown-item text-dark" href="#" onClick={() => { localStorage.clear(); window.location.href = '/'; }}>
                   Cerrar sesión 👨
                 </a>
               </li>
@@ -151,7 +162,6 @@ function NavBar() {
         </div>
       </nav>
 
-      {/* Modales */}
       <Anadir show={showModal} handleClose={handleClose} tipo={tipo} />
       <ModificarNombre show={showModal2} handleClose={handleClose} />
       <SubirArchivoModal show={showModal3} handleClose={handleClose} />

@@ -9,6 +9,7 @@ export function ContactProvider({ children }) {
     const storedUserInfo = JSON.parse(localStorage.getItem('userInfo')) || {
         email: '',
         contrasena: '',
+        foto: '',
     };
 
     const [userInfo, setUserInfo] = useState(storedUserInfo);

@@ -48,6 +48,11 @@ class VaultSyncService {
   predecirComando(comando) {
     return http.post(`/predecir?comando=${encodeURIComponent(comando)}`);
   }
+   obtenerCliente(email) {
+    return http.get(`/cliente?email=${encodeURIComponent(email)}`, {
+   responseType: 'blob',
+  });
+  }
 }
 
 

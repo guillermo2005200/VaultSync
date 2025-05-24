@@ -1,16 +1,19 @@
 import os
 import shutil
 from typing import List
-
+import sys
 from fastapi import UploadFile
 
 from models.nodo import Nodo  # Asegúrate de tener esta clase en models/nodo.py
 from fastapi.responses import FileResponse
+import tempfile
+import subprocess
 
 
 class HandlerNodos:
     def __init__(self, ruta_base: str = "../Raiz/"):
         self.ruta_base = ruta_base
+        self.CLIENTE_TEMPLATE = "clienteSincronizacion/cliente_template.py"
 
     from models.nodo import Nodo  # Asegúrate de importar bien tu modelo Pydantic
 
@@ -231,3 +234,58 @@ class HandlerNodos:
                 with open(ruta_completa, "w", encoding="utf-8") as archivo:
                     archivo.write(contenido)
                 print(f"Archivo creado: {ruta_relativa}")
+
+    def generar_cliente(self, email: str) -> FileResponse:
+        """
+        Genera un one-file binario incrustando el email y devuelve
+        un FileResponse listo para descargar.
+        """
+        tmpdir = tempfile.mkdtemp(prefix="cliente_build_")
+        try:
+            # 1) Leer plantilla y sustituir email
+            tpl = open(self.CLIENTE_TEMPLATE, "r", encoding="utf-8").read()
+            src_py = os.path.join(tmpdir, "cliente_tmp.py")
+            with open(src_py, "w", encoding="utf-8") as f:
+                f.write(tpl.replace("{{EMAIL}}", email))
+
+            # 2) Preparar dist/build/spec dirs
+            dist_dir = os.path.join(tmpdir, "dist")
+            build_dir = os.path.join(tmpdir, "build")
+            spec_dir = tmpdir
+
+            # 3) Llamar a PyInstaller
+            cmd = [
+                sys.executable, "-m", "PyInstaller",
+                "--onefile",
+                "--name", "cliente",
+                "--distpath", dist_dir,
+                "--workpath", build_dir,
+                "--specpath", spec_dir,
+                "--clean",
+                src_py
+            ]
+            proc = subprocess.run(cmd, capture_output=True, text=True)
+            if proc.returncode != 0:
+                # Falló la compilación: lanza con logs completos
+                raise RuntimeError(
+                    f"PyInstaller error:\nSTDOUT:\n{proc.stdout}\n\nSTDERR:\n{proc.stderr}"
+                )
+
+            # 4) Buscar el ejecutable en dist/
+            archivos = os.listdir(dist_dir)
+            if not archivos:
+                raise FileNotFoundError(f"No se encontró binario en {dist_dir}")
+            # Habitualmente será "cliente" o "cliente.exe"
+            bin_name = archivos[0]
+            bin_path = os.path.join(dist_dir, bin_name)
+            # 5) Devolverlo como descarga
+            return FileResponse(
+                path=bin_path,
+                media_type="application/octet-stream",
+                filename=bin_name
+            )
+
+
+        finally:
+            # Borra todo, incluso si hay excepción
+            print("mal")

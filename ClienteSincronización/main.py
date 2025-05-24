@@ -8,7 +8,8 @@ from inotify_simple import INotify, flags
 URL_API = "http://127.0.0.1:8000/api/v1/cambios"
 URL_API2 = "http://127.0.0.1:8000/api/v1/cambios2"
 RUTA_LOCAL = "/home/guillermo/prueba_cliente"
-EMAIL = "barcenalopezguillermo@gmail.com"  # <-- query param
+EMAIL = "{{EMAIL}}"
+
 
 
 class ClienteSincronizador:

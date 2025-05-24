@@ -174,4 +174,7 @@ async def recibir_cambios(datos: list[dict], email: str):
         monitorArchivos.set_realizar(True)  # También lo reactivamos en caso de error
         return {"error": f"Error al sincronizar"}
 
-
+@app.get(root_link + "/cliente")
+async def descargar_cliente(email: str):
+    handler = HandlerNodos()
+    return handler.generar_cliente(email)
