@@ -102,7 +102,7 @@ function Nodos() {
       {terminal ? (
         <TerminalSimulada ruta={ruta} />
       ) : (
-        <div className="container color1 text-white min-vh-100 min-vw-100 mt-5 pt-5" style={{ fontFamily: 'Cursive' }}>
+        <div className="container color1 text-white min-vh-100 min-vw-100 mt-5 pt-5">
           
           {/* RUTA ACTUAL */}
           <div className="text-center mb-4">

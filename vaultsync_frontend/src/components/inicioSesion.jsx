@@ -18,6 +18,7 @@ function InicioSesion() {
 
   const [loginError, setLoginError] = useState("");
   const [signupError, setSignupError] = useState("");
+  const [singUp, setSingUp] = useState("");
   const [recoveryError, setRecoveryError] = useState("");
 
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ function InicioSesion() {
     VaultSyncService.registrar(singUp)
       .then(response => {
         console.log(response.data);
-        setSignupError("Registro exitoso. Ahora puedes iniciar sesión.");
+        setSingUp("Registro exitoso. Ahora puedes iniciar sesión.");
         // Vaciar campos
         setEmail2("");
         setPassword2("");
@@ -115,6 +116,7 @@ function InicioSesion() {
           <input type="text" placeholder="Direccion" className="inputinicio" value={direccion} onChange={(e) => setDireccion(e.target.value)} />
           <input type="password" placeholder="Contraseña" className="inputinicio" value={password2} onChange={(e) => setPassword2(e.target.value)} />
           {signupError && <div className="text-danger text-center mt-2">{signupError}</div>}
+          {singUp && <div className="text-success text-center mt-2">{singUp}</div>}
           <button onClick={handleSingUp} className="buttoninicio">Sign up</button>
         </form>
       </div>
