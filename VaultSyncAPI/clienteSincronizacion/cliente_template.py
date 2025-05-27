@@ -11,8 +11,8 @@ from inotify_simple import INotify, flags
 
 EMAIL = "{{EMAIL}}"
 
-URL_API = "http://127.0.0.1:8000/api/v1/cambios"
-URL_API2 = "http://127.0.0.1:8000/api/v1/cambios2"
+URL_API = "https://vaultsync.es/api/v1/cambios"
+URL_API2 = "https://vaultsync.es/api/v1/cambios2"
 RUTA_LOCAL = "/home/VaultSync"
 
 SERVICE_UNIT = f"""[Unit]

@@ -178,4 +178,6 @@ async def recibir_cambios(datos: list[dict], email: str):
 @app.get(root_link + "/cliente")
 async def descargar_cliente(email: str):
     handler = HandlerNodos()
-    return handler.generar_cliente(email)
+    res = handler.generar_cliente(email)
+    monitorArchivos.iniciar_vigilancia()
+    return res
