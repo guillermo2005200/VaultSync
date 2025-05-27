@@ -62,9 +62,9 @@ class MonitorArchivos:
                 # Extraemos el segmento entre la 6ª y la 7ª '/'
                 # -> el email según tu ruta fija
                 partes = ruta_base_evento.split(os.sep)
-                if len(partes) > 6:
+                if len(partes) > 2:
                     print(partes)
-                    email = partes[6]
+                    email = partes[2]
                 else:
                     email = os.path.basename(ruta_base_evento)
 
