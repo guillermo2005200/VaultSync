@@ -11,7 +11,7 @@ class EmailSender:
         self.password = 'thos epga owci yqlo'
         self.server = smtplib.SMTP('smtp.gmail.com',587)
 
-        with open("./logo.png", "rb") as image_file:
+        with open("services/logo.png", "rb") as image_file:
             import base64
             self.base64_imagen = base64.b64encode(image_file.read()).decode()
 

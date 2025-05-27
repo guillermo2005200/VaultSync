@@ -240,7 +240,7 @@ class HandlerNodos:
         Genera un one-file binario incrustando el email y devuelve
         un FileResponse listo para descargar.
         """
-        ruta_usuario = os.path.join(self.ruta_base, email)
+        ruta_usuario = os.path.join(self.ruta_base, email,".cliente")
         with open(ruta_usuario, "w") as archivo:
             archivo.write("")
         tmpdir = tempfile.mkdtemp(prefix="cliente_build_")
