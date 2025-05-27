@@ -17,6 +17,7 @@ function NavBar() {
   const [showModal3, setShowModal3] = useState(false);
   const [tipo, setTipo] = useState("");
   const [loading, setLoading] = useState(false);
+    const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
   const { nodoActivo } = useContext(NodoContext);
   const { ruta } = useContext(RutaContext);
@@ -54,24 +55,27 @@ function NavBar() {
       });
   };
   const handleCliente = () => {
+    setLoading(true);
   VaultSyncService.obtenerCliente(userInfo.email)
     .then(response => {
       // response.data contiene el blob binario
-      alert("Descargando cliente, por favor espera unos segundos...");
       const blob = new Blob([response.data], { type: 'application/octet-stream' });
-      alert("Descargando cliente, por favor espera unos segundos...");
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       // Nombre sugerido para el archivo
       link.download = 'cliente';
       document.body.appendChild(link);
+      setLoading(false);
       link.click();
       document.body.removeChild(link);
+      
     })
     .catch(error => {
+    
       console.error("Error descargando el cliente:", error);
       alert("Error al descargar el cliente");
+      setLoading(false);
     });
 };
 
@@ -102,6 +106,8 @@ function NavBar() {
     setTerminal(true);
   };
 
+
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark fixed-top shadow">
@@ -114,15 +120,18 @@ function NavBar() {
             aria-controls="navbarContenido"
             aria-expanded="false"
             aria-label="Toggle navigation"
+            onClick={() => setIsNavCollapsed(!isNavCollapsed)}
           >
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="position-absolute start-50 translate-middle-x">
-            <a className="navbar-brand" href="#" onClick={() => setRuta("")}>
-              <img src={image} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
-            </a>
-          </div>
+          {isNavCollapsed && (
+            <div className="position-absolute start-50 translate-middle-x">
+              <a className="navbar-brand" href="#" onClick={() => setRuta("")}>
+                <img src={image} alt="VaultSync" height="90" style={{ borderRadius: '8px' }} />
+              </a>
+            </div>
+          )}
 
           <div className="collapse navbar-collapse" id="navbarContenido">
             <ul className="navbar-nav d-flex flex-row gap-3">
@@ -148,7 +157,7 @@ function NavBar() {
                 <a className="nav-link" href="" onClick={handleTerminal}>📟</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#" onClick={handleCliente}>⏳</a>
+                <a className="nav-link" href="#" onClick={handleCliente}>⏳{loading && '⏬'}</a>
               </li>
             </ul>
           </div>
