@@ -3,6 +3,8 @@ import os
 from repository.HandlerMySQL import DatabaseConnection
 from repository.HandlerNodos import HandlerNodos
 
+"""MonitorArchivos: Clase para monitorear cambios en archivos de usuarios"""
+
 
 class MonitorArchivos:
     def __init__(self, ruta_base="../Raiz/"):
@@ -24,8 +26,8 @@ class MonitorArchivos:
         self.rutas_vigiladas = []
         self.watch_to_path = {}
 
+    # Inicia la vigilancia de las carpetas de usuarios y sus subdirectorios
     def iniciar_vigilancia(self):
-        """Inicia la vigilancia de las carpetas de usuarios y sus subdirectorios"""
         for email in self.db.recuperarCorreos():
             if self.handler_nodos.verificar_cliente(email):
                 ruta_usuario = os.path.join(self.ruta_base, email)
@@ -36,8 +38,9 @@ class MonitorArchivos:
 
         print("Vigilando carpetas de usuarios válidos y sus subdirectorios...")
 
+    # Añade vigilancia recursivamente a un directorio y sus subdirectorios
     def _vigilar_directorio_recursivo(self, ruta):
-        """Añade vigilancia recursivamente a un directorio y sus subdirectorios"""
+
         # Vigilar el directorio actual
         self.rutas_vigiladas.append(ruta)
         wd = self.inotify.add_watch(ruta, self.watch_flags)
@@ -52,14 +55,12 @@ class MonitorArchivos:
         except PermissionError:
             print(f"Sin permiso para acceder a: {ruta}")
 
+    # Monitorea continuamente los cambios en las carpetas vigiladas
     def monitorear_cambios(self):
-        """Monitorea continuamente los cambios en las carpetas vigiladas"""
         while True:
             for event in self.inotify.read():
                 ruta_base_evento = self.watch_to_path.get(event.wd, "Desconocido")
                 ruta_completa = os.path.join(ruta_base_evento, event.name)
-
-                # Extraemos el segmento entre la 6ª y la 7ª '/'
                 # -> el email según tu ruta fija
                 partes = ruta_base_evento.split(os.sep)
                 if len(partes) > 2:
@@ -67,12 +68,9 @@ class MonitorArchivos:
                     email = partes[2]
                 else:
                     email = os.path.basename(ruta_base_evento)
-
                 print(f"Ruta base detectada: {ruta_base_evento} -> Email: {email}")
-
                 if self.realizar and email not in self.emails:
                     self.emails.append(email)
-
                 self.nodos = self.handler_nodos.obtener_nodos_recursivo(email, False)
 
     def get_nodos(self):

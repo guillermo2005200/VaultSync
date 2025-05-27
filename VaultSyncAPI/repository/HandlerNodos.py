@@ -3,20 +3,20 @@ import shutil
 from typing import List
 import sys
 from fastapi import UploadFile
+from models.nodo import Nodo
 
 from models.nodo import Nodo  # Asegúrate de tener esta clase en models/nodo.py
 from fastapi.responses import FileResponse
 import tempfile
 import subprocess
 
-
+"""Clase para manejar operaciones de nodos en el sistema de archivos."""
 class HandlerNodos:
     def __init__(self, ruta_base: str = "../Raiz/"):
         self.ruta_base = ruta_base
         self.CLIENTE_TEMPLATE = "clienteSincronizacion/cliente_template.py"
 
-    from models.nodo import Nodo  # Asegúrate de importar bien tu modelo Pydantic
-
+    # Funcion para obtener nodos de un directorio específico (usado en el frontend)
     def obtener_nodos(self, nombre: str, cliente) -> List[Nodo]:
         nodos = []
 
@@ -54,6 +54,7 @@ class HandlerNodos:
 
         return nodos
 
+    # Funcion para obtener nodos de un directorio específico de forma recursiva (usado para el cliente sincronización)
     def obtener_nodos_recursivo(self, nombre: str, cliente) -> List[Nodo]:
         nodos = []
 
@@ -102,6 +103,7 @@ class HandlerNodos:
 
         return nodos
 
+    # Funcion para crear una carpeta
     def crear_carpeta(self, nombre: str):
         ruta_carpeta = os.path.join(self.ruta_base, nombre)
         try:
@@ -112,12 +114,14 @@ class HandlerNodos:
             print(f"Error al crear la carpeta: {e}")
             return False
 
+    # Funcion para descargar un archivo
     def descargar_archivo(self, archivo: str):
         ruta_archivo = os.path.join(self.ruta_base, archivo)
         if not os.path.exists(ruta_archivo):
             return {"mensaje": "Archivo no encontrado"}
         return FileResponse(ruta_archivo, media_type='application/octet-stream', filename=archivo)
 
+    # Funcion para subir un archivo
     def subir_archivo(self, email: str, archivo: UploadFile) -> bool:
         try:
             ruta_usuario = os.path.join(self.ruta_base, email)
@@ -133,6 +137,7 @@ class HandlerNodos:
             print(f"Error al subir archivo: {e}")
             return False
 
+    # Funcion para eliminar un archivo o carpeta
     def eliminar_archivo(self, nombre_archivo: str) -> bool:
         ruta_archivo = os.path.join(self.ruta_base, nombre_archivo)
 
@@ -152,6 +157,7 @@ class HandlerNodos:
             print(f"Error al eliminar: {e}")
             return False
 
+    # Funcion para modificar el contenido de un archivo
     def modificar_contenido(self, nombre_archivo: str, nuevo_contenido: str) -> bool:
         ruta_archivo = os.path.join(self.ruta_base, nombre_archivo)
 
@@ -168,6 +174,7 @@ class HandlerNodos:
             print(f"Error al modificar contenido: {e}")
             return False
 
+    # Funcion para modificar el nombre de un archivo o carpeta
     def modificar_nombre(self, archivo: str, nombre: str) -> bool:
         ruta_archivo = os.path.join(self.ruta_base, archivo)
 
@@ -191,6 +198,7 @@ class HandlerNodos:
             print(f"Error al modificar nombre: {e}")
             return False
 
+    # Funcion para crear un archivo vacío
     def crear_archivo(self, nombre: str):
         ruta_archivo = os.path.join(self.ruta_base, nombre)
         print(ruta_archivo)
@@ -203,7 +211,7 @@ class HandlerNodos:
             print(f"Error al crear el archivo: {e}")
             return False
 
-
+    # Funcion para verificar si el cliente tiene activado el sincronizador
     def verificar_cliente(self, ruta: str) -> bool:
         try:
             ruta_completa = os.path.join(self.ruta_base, ruta, ".cliente")
@@ -213,7 +221,7 @@ class HandlerNodos:
             print(f"Error al verificar archivo .cliente: {e}")
             return False
 
-
+    # Funcion para sincronizar los archivos locales del usuario con el servidor
     def sincronizar(self, nodos, email):
         ruta_objetivo = os.path.join(self.ruta_base)
         ruta_objetivo2 = os.path.join(self.ruta_base, email)
@@ -235,11 +243,10 @@ class HandlerNodos:
                     archivo.write(contenido)
                 print(f"Archivo creado: {ruta_relativa}")
 
+
+    #clase para generar el cliente de sincronización
     def generar_cliente(self, email: str) -> FileResponse:
-        """
-        Genera un one-file binario incrustando el email y devuelve
-        un FileResponse listo para descargar.
-        """
+
         ruta_usuario = os.path.join(self.ruta_base, email,".cliente")
         with open(ruta_usuario, "w") as archivo:
             archivo.write("")
@@ -289,6 +296,6 @@ class HandlerNodos:
             )
 
 
-        finally:
-            # Borra todo, incluso si hay excepción
-            print("mal")
+        except Exception as e:
+            print(f"Error al generar el cliente: {e}")
+            raise e

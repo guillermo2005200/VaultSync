@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 import os
-
+"""Clase para manejar la conexión a la base de datos MySQL y realizar operaciones CRUD sobre la tabla 'usuarios'."""
 class DatabaseConnection:
     def __init__(self):
         self.config = {

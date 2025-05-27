@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+"""Modelo para validar los usuarios"""
 class Usuario(BaseModel):
     email: str
     contraseña: str

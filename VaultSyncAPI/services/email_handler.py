@@ -3,18 +3,20 @@
 import smtplib
 from email.message import EmailMessage
 
-
+"""Clase que se encarga de enviar correos electrónicos de bienvenida y recuperación de contraseña."""
 class EmailSender:
     def __init__(self):
-        # Configura aquí tus credenciales reales o usa variables de entorno para mayor seguridad
+        # Configuración del servidor SMTP
         self.sender = 'barcenalopezguillermo@gmail.com'
         self.password = 'thos epga owci yqlo'
         self.server = smtplib.SMTP('smtp.gmail.com',587)
 
+        # Cargar la imagen del logo y convertirla a base64
         with open("services/logo.png", "rb") as image_file:
             import base64
             self.base64_imagen = base64.b64encode(image_file.read()).decode()
 
+    # cuando el usuario se registre, se le enviará un correo de bienvenida
     def enviar_bienvenida(self, destinatario, nombre):
         # Crear el mensaje
         message = EmailMessage()
@@ -58,6 +60,8 @@ class EmailSender:
         except Exception as ex:
             print("Error al enviar correo:", ex)
 
+
+    # cuando el usuario solicite recuperar su contraseña, se le enviará un correo con un enlace para cambiarla
     def recuperacion_contrasena(self, destinatario):
         print(destinatario)
         # Crear el mensaje
