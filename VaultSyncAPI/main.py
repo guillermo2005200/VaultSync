@@ -28,7 +28,7 @@ app.add_middleware(
 
 root_link = "/api/v1"
 modelo = ModeloComandosBERT("services/comandos_12000_intercalado.csv")
-#modelo.entrenar()
+modelo.entrenar()
 monitorArchivos = MonitorArchivos()
 monitorArchivos.iniciar_vigilancia()
 threading.Thread(target=monitorArchivos.monitorear_cambios, daemon=True).start()
