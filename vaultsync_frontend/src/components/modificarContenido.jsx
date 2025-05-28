@@ -11,6 +11,16 @@ import { Document, Page, pdfjs } from 'react-pdf';
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.min.mjs`;
 
 
+function base64ToUint8Array(base64) {
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+}
+
 function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
   const [contenido, setContenido] = useState("");
   const { userInfo } = useContext(ContactContext);
@@ -40,29 +50,21 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
     <Modal
       show={show}
       onHide={handleClose}
-      centered
-      dialogClassName="modal-editar"
     >
-      <Modal.Header closeButton className="modal-header-dark" onClick={handleClose}>
-        <Modal.Title>{esPdf ? 'Visualizar PDF 📄' : 'Editar archivo 📝'}</Modal.Title>
-      </Modal.Header>
-
-      <Modal.Body className="bg-dark text-white">
+      <Modal.Body className="bg-dark">
         {esPdf ? (
-          <div className="d-flex justify-content-center">
-            {base64Pdf ? (
-              <Document
-                file={{ data: base64Pdf }}
-                onLoadError={(error) => console.error("Error cargando PDF:", error)}
-                loading={<div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>}
-                noData={<div style={{ color: 'red' }}>No se proporcionó PDF.</div>}
-              >
-                <Page pageNumber={1} />
-              </Document>
-            ) : (
-              <div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>
-            )}
-          </div>
+          base64Pdf ? (
+            <Document
+              file={{ data: base64ToUint8Array(base64Pdf) }}
+              onLoadError={(error) => console.error("Error cargando PDF:", error)}
+              loading={<div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>}
+              noData={<div style={{ color: 'red' }}>No se proporcionó PDF.</div>}
+            >
+              <Page pageNumber={1} />
+            </Document>
+          ) : (
+            <div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>
+          )
         ) : (
           <Form>
             <Form.Group controlId="contenidoArchivo">
