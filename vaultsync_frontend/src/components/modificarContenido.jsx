@@ -14,23 +14,63 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pd
 function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
   const [contenido, setContenido] = useState("");
   const [pdfData, setPdfData] = useState(null);
+  const [numPages, setNumPages] = useState(null);
   const { userInfo } = useContext(ContactContext);
   const { ruta } = useContext(RutaContext);
   const { nodoActivo } = useContext(NodoContext);
 
+  const convertToBase64 = (pdfContent) => {
+    try {
+      // Si pdfContent es un ArrayBuffer (lo que obtenemos de un PDF binario)
+      if (pdfContent instanceof ArrayBuffer) {
+        const bytes = new Uint8Array(pdfContent);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64 = btoa(binary);
+        return `data:application/pdf;base64,${base64}`;
+      }
+      
+      // Si es un string que comienza con %PDF
+      if (typeof pdfContent === 'string' && pdfContent.startsWith('%PDF')) {
+        const base64 = btoa(pdfContent);
+        return `data:application/pdf;base64,${base64}`;
+      }
+      
+      // Si ya es una URL de datos base64
+      const pdfPrefix = 'data:application/pdf;base64,';
+      if (typeof pdfContent === 'string' && pdfContent.startsWith(pdfPrefix)) {
+        return pdfContent;
+      }
+      
+      // Si es base64 sin el prefijo
+      return `${pdfPrefix}${pdfContent}`;
+    } catch (error) {
+      console.error('Error converting PDF:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (show) {
       setContenido(cont);
-      if (esPdf && base64Pdf) {
-        // Asegurarnos de que el base64 tenga el formato correcto
-        const pdfPrefix = 'data:application/pdf;base64,';
-        const formattedBase64 = base64Pdf.startsWith(pdfPrefix) 
-          ? base64Pdf 
-          : pdfPrefix + base64Pdf;
-        setPdfData(formattedBase64);
+      if (esPdf) {
+        console.log('Tipo de contenido PDF:', typeof cont);
+        const data = base64Pdf || cont;
+        if (data) {
+          const pdfDataUrl = convertToBase64(data);
+          console.log('PDF data URL generada', pdfDataUrl ? pdfDataUrl.substring(0, 100) : 'null');
+          setPdfData(pdfDataUrl);
+        }
       }
     }
   }, [show, cont, base64Pdf, esPdf]);
+
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+    console.log('PDF cargado exitosamente:', numPages, 'páginas');
+  };
 
   const handleGuardar = () => {
     const archivo = `${userInfo.email}/${ruta}/${nodoActivo}`;
@@ -61,18 +101,23 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
             {pdfData ? (
               <Document
                 file={pdfData}
-                onLoadError={(error) => console.error("Error cargando PDF:", error)}
+                onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError={(error) => {
+                  console.error("Error cargando PDF:", error);
+                  console.log("PDF data:", pdfData.substring(0, 100)); // Log primeros 100 caracteres
+                }}
                 loading={<div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>}
                 noData={<div style={{ color: 'red' }}>No se pudo cargar el PDF.</div>}
               >
-                <Page 
+                {numPages && <Page 
                   pageNumber={1} 
                   renderTextLayer={false}
                   renderAnnotationLayer={false}
-                />
+                  scale={1.5}
+                />}
               </Document>
             ) : (
-              <div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>
+              <div style={{ color: 'orange', fontWeight: 'bold' }}>Procesando PDF...</div>
             )}
           </div>
         ) : (
