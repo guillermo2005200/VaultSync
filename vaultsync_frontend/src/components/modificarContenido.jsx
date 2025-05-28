@@ -21,7 +21,7 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
     if (show) {
       console.log("Editando:");
       setContenido(cont);
-      console.log("Contenido inicial:", cont);
+      console.log("Contenido inicial:", base64Pdf ? "PDF" : cont);
     }
   }, [show]);
 
