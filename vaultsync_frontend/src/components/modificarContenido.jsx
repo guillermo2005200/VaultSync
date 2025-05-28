@@ -8,7 +8,10 @@ import { NodoContext } from '../context/nodoContext';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Configurar el worker de pdf.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
 
 function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
   const [contenido, setContenido] = useState("");
