@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import './styles/modal.css';
 import VaultSyncService from '../services/VaultSyncService';
@@ -50,12 +50,18 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
       <Modal.Body className="bg-dark text-white">
         {esPdf ? (
           <div className="d-flex justify-content-center">
-            <Document
-              file={base64Pdf ? { data: base64Pdf } : null}
-              onLoadError={(error) => console.error("Error cargando PDF:", error)}
-            >
-              <Page pageNumber={1} />
-            </Document>
+            {base64Pdf ? (
+              <Document
+                file={{ data: base64Pdf }}
+                onLoadError={(error) => console.error("Error cargando PDF:", error)}
+                loading={<div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>}
+                noData={<div style={{ color: 'red' }}>No se proporcionó PDF.</div>}
+              >
+                <Page pageNumber={1} />
+              </Document>
+            ) : (
+              <div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>
+            )}
           </div>
         ) : (
           <Form>
