@@ -6,12 +6,9 @@ import { ContactContext } from '../context/userContext';
 import { RutaContext } from '../context/rutaContext';
 import { NodoContext } from '../context/nodoContext';
 import { Document, Page, pdfjs } from 'react-pdf';
+import workerSrc from 'pdfjs-dist/build/pdf.worker.entry';
 
-// Configurar el worker de pdf.js
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
 function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
   const [contenido, setContenido] = useState("");
