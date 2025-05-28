@@ -51,7 +51,7 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
         {esPdf ? (
           <div className="d-flex justify-content-center">
             <Document
-              file={base64Pdf}
+              file={base64Pdf ? { data: base64Pdf } : null}
               onLoadError={(error) => console.error("Error cargando PDF:", error)}
             >
               <Page pageNumber={1} />
