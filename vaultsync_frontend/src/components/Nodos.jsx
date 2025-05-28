@@ -19,6 +19,9 @@ function Nodos() {
   const [contenido, setContenido] = useState("");
   const { setTerminal } = useContext(TerminalContext);
   const { terminal } = useContext(TerminalContext);
+  const [esPdf, setEsPdf] = useState(false);
+  const [contenidoPdf, setContenidoPdf] = useState('');
+
 
 
   useEffect(() => {
@@ -49,29 +52,40 @@ function Nodos() {
       });
   };
   
-  const abrirNodo = (nodo) => {
-    if (nodo.directorio) {
-      if (nodo.nombre === "..") {
-        const nuevaRuta = ruta.substring(0, ruta.lastIndexOf("/"));
-        setRuta(nuevaRuta || ""); // vuelve atrás
-      } else {
-        const nuevaRuta = `${ruta}/${nodo.nombre}`;
-        setRuta(nuevaRuta); // avanza a carpeta
-        console.log(nuevaRuta);
-      }
+ const abrirNodo = (nodo) => {
+  if (nodo.directorio) {
+    if (nodo.nombre === "..") {
+      const nuevaRuta = ruta.substring(0, ruta.lastIndexOf("/"));
+      setRuta(nuevaRuta || ""); // vuelve atrás
     } else {
-      let encontrado = false;
-      for (let i = 0; i < nodos.length && !encontrado; i++) {
-        if (nodos[i].nombre === nodo.nombre) {
-          setContenido(nodos[i].contenido);
-          encontrado = true;
-        }
-      }
-      setShowModal(true);
-      console.log(`Abriendo archivo: ${nodo.nombre}`);
-
+      const nuevaRuta = `${ruta}/${nodo.nombre}`;
+      setRuta(nuevaRuta); // avanza a carpeta
+      console.log(nuevaRuta);
     }
-  };
+  } else {
+    let encontrado = false;
+
+    for (let i = 0; i < nodos.length && !encontrado; i++) {
+      if (nodos[i].nombre === nodo.nombre) {
+        const contenido = nodos[i].contenido;
+
+        // Detectamos si es un PDF
+        if (nodo.nombre.toLowerCase().endsWith(".pdf")) {
+          setContenidoPdf(contenido);     // contenido en base64 con cabecera
+          setEsPdf(true);
+        } else {
+          setContenido(contenido);        // contenido de texto u otro
+          setEsPdf(false);
+        }
+
+        encontrado = true;
+      }
+    }
+
+    setShowModal(true); // muestra el modal sea texto o PDF
+    console.log(`Abriendo archivo: ${nodo.nombre}`);
+  }
+};
 
   const clickSimple = (nodo) => {
     setNodoActivo(nodo.nombre);
@@ -123,7 +137,7 @@ function Nodos() {
         </div>
       )}
   
-      <ModificarCEditarContenidoModal show={showModal} handleClose={handleClose} cont={contenido} />
+      <ModificarCEditarContenidoModal show={showModal} handleClose={handleClose} cont={contenido} esPdf={esPdf} base64Pdf={contenidoPdf}/>
     </>
   );  
 }
