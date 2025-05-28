@@ -8,7 +8,7 @@ import { NodoContext } from '../context/nodoContext';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Vite requiere @vite-ignore para workerSrc dinámico
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.min.mjs`;
 
 
 function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
