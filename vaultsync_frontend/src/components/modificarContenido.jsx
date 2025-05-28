@@ -12,7 +12,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pd
 
 
 function base64ToUint8Array(base64) {
-  const binaryString = window.atob(base64);
+  // Remove data URI prefix if present
+  let cleaned = base64.replace(/^data:application\/pdf;base64,/, '');
+  // Convert from URL-safe base64 to standard base64
+  cleaned = cleaned.replace(/-/g, '+').replace(/_/g, '/');
+  // Pad with '=' if necessary
+  while (cleaned.length % 4 !== 0) {
+    cleaned += '=';
+  }
+  const binaryString = window.atob(cleaned);
   const len = binaryString.length;
   const bytes = new Uint8Array(len);
   for (let i = 0; i < len; i++) {
