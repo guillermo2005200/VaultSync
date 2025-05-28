@@ -13,17 +13,24 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pd
 
 function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
   const [contenido, setContenido] = useState("");
+  const [pdfData, setPdfData] = useState(null);
   const { userInfo } = useContext(ContactContext);
   const { ruta } = useContext(RutaContext);
   const { nodoActivo } = useContext(NodoContext);
 
   useEffect(() => {
     if (show) {
-      console.log("Editando:");
       setContenido(cont);
-      console.log("Contenido inicial:", base64Pdf ? base64Pdf : cont);
+      if (esPdf && base64Pdf) {
+        // Asegurarnos de que el base64 tenga el formato correcto
+        const pdfPrefix = 'data:application/pdf;base64,';
+        const formattedBase64 = base64Pdf.startsWith(pdfPrefix) 
+          ? base64Pdf 
+          : pdfPrefix + base64Pdf;
+        setPdfData(formattedBase64);
+      }
     }
-  }, [show]);
+  }, [show, cont, base64Pdf, esPdf]);
 
   const handleGuardar = () => {
     const archivo = `${userInfo.email}/${ruta}/${nodoActivo}`;
@@ -50,15 +57,19 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
 
       <Modal.Body className="bg-dark text-white">
         {esPdf ? (
-          <div className="d-flex justify-content-center">
-            {base64Pdf ? (
+          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '500px' }}>
+            {pdfData ? (
               <Document
-                file={{ data: base64Pdf }}
+                file={pdfData}
                 onLoadError={(error) => console.error("Error cargando PDF:", error)}
                 loading={<div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>}
-                noData={<div style={{ color: 'red' }}>No se proporcionó PDF.</div>}
+                noData={<div style={{ color: 'red' }}>No se pudo cargar el PDF.</div>}
               >
-                <Page pageNumber={1} />
+                <Page 
+                  pageNumber={1} 
+                  renderTextLayer={false}
+                  renderAnnotationLayer={false}
+                />
               </Document>
             ) : (
               <div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>
