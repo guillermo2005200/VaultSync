@@ -25,16 +25,24 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
       if (pdfContent instanceof ArrayBuffer) {
         const bytes = new Uint8Array(pdfContent);
         let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
           binary += String.fromCharCode(bytes[i]);
         }
-        const base64 = btoa(binary);
+        // Usar encodeURIComponent para manejar caracteres no-Latin1
+        const base64 = btoa(encodeURIComponent(binary).replace(/%([0-9A-F]{2})/g,
+          function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+          }));
         return `data:application/pdf;base64,${base64}`;
       }
       
       // Si es un string que comienza con %PDF
       if (typeof pdfContent === 'string' && pdfContent.startsWith('%PDF')) {
-        const base64 = btoa(pdfContent);
+        const base64 = btoa(encodeURIComponent(pdfContent).replace(/%([0-9A-F]{2})/g,
+          function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+          }));
         return `data:application/pdf;base64,${base64}`;
       }
       
