@@ -45,6 +45,14 @@ class VaultSyncService {
       responseType: 'blob', // Para que la respuesta sea un archivo descargable
     });
   }
+  descargarPDF(archivo) {
+    return http.get(`/descargar?archivo=${encodeURIComponent(archivo)}`, {
+      responseType: 'arraybuffer', 
+       headers: {
+        'Accept': 'application/pdf'
+      }// Para que la respuesta sea un archivo descargable
+    });
+  }
   predecirComando(comando) {
     return http.post(`/predecir?comando=${encodeURIComponent(comando)}`);
   }

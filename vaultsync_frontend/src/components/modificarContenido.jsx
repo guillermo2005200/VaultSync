@@ -7,73 +7,58 @@ import { RutaContext } from '../context/rutaContext';
 import { NodoContext } from '../context/nodoContext';
 import { Document, Page, pdfjs } from 'react-pdf';
 
-// Vite requiere @vite-ignore para workerSrc dinámico
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.min.mjs`;
+// Esto es importante: para Vite, import.meta.url te permite importar archivos locales
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 
-function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
+
+function EditarContenidoModal({ show, handleClose, cont, esPdf }) {
   const [contenido, setContenido] = useState("");
   const [pdfData, setPdfData] = useState(null);
   const [numPages, setNumPages] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const { userInfo } = useContext(ContactContext);
   const { ruta } = useContext(RutaContext);
   const { nodoActivo } = useContext(NodoContext);
 
-  const convertToBase64 = (pdfContent) => {
-    try {
-      // Si pdfContent es un ArrayBuffer (lo que obtenemos de un PDF binario)
-      if (pdfContent instanceof ArrayBuffer) {
-        const bytes = new Uint8Array(pdfContent);
-        let binary = '';
-        const len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        // Usar encodeURIComponent para manejar caracteres no-Latin1
-        const base64 = btoa(encodeURIComponent(binary).replace(/%([0-9A-F]{2})/g,
-          function toSolidBytes(match, p1) {
-            return String.fromCharCode('0x' + p1);
-          }));
-        return `data:application/pdf;base64,${base64}`;
-      }
-      
-      // Si es un string que comienza con %PDF
-      if (typeof pdfContent === 'string' && pdfContent.startsWith('%PDF')) {
-        const base64 = btoa(encodeURIComponent(pdfContent).replace(/%([0-9A-F]{2})/g,
-          function toSolidBytes(match, p1) {
-            return String.fromCharCode('0x' + p1);
-          }));
-        return `data:application/pdf;base64,${base64}`;
-      }
-      
-      // Si ya es una URL de datos base64
-      const pdfPrefix = 'data:application/pdf;base64,';
-      if (typeof pdfContent === 'string' && pdfContent.startsWith(pdfPrefix)) {
-        return pdfContent;
-      }
-      
-      // Si es base64 sin el prefijo
-      return `${pdfPrefix}${pdfContent}`;
-    } catch (error) {
-      console.error('Error converting PDF:', error);
-      return null;
-    }
-  };
-
   useEffect(() => {
     if (show) {
       setContenido(cont);
-      if (esPdf) {
-        console.log('Tipo de contenido PDF:', typeof cont);
-        const data = base64Pdf || cont;
-        if (data) {
-          const pdfDataUrl = convertToBase64(data);
-          console.log('PDF data URL generada', pdfDataUrl ? pdfDataUrl.substring(0, 100) : 'null');
-          setPdfData(pdfDataUrl);
-        }
+      if (esPdf && nodoActivo) {
+        setIsLoading(true);
+        setError(null);
+        setPdfData(null);
+        
+        const archivo = `${userInfo.email}/${ruta}/${nodoActivo}`;
+        console.log('Descargando PDF:', archivo);
+        
+        VaultSyncService.descargarPDF(archivo)
+          .then(response => {
+            console.log('PDF descargado, tamaño:', response.data.byteLength, 'bytes');
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            setPdfData(url);
+            setIsLoading(false);
+          })
+          .catch(error => {
+            console.error('Error al descargar PDF:', error);
+            setError('Error al cargar el PDF. Por favor, inténtelo de nuevo.');
+            setIsLoading(false);
+            setPdfData(null);
+          });
       }
     }
-  }, [show, cont, base64Pdf, esPdf]);
+
+    return () => {
+      if (pdfData) {
+        URL.revokeObjectURL(pdfData);
+      }
+    };
+  }, [show, esPdf, nodoActivo, userInfo.email, ruta]);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
@@ -106,26 +91,32 @@ function EditarContenidoModal({ show, handleClose, cont, esPdf, base64Pdf }) {
       <Modal.Body className="bg-dark text-white">
         {esPdf ? (
           <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '500px' }}>
-            {pdfData ? (
+            {isLoading ? (
+              <div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>
+            ) : error ? (
+              <div style={{ color: 'red' }}>{error}</div>
+            ) : pdfData ? (
               <Document
                 file={pdfData}
                 onLoadSuccess={onDocumentLoadSuccess}
                 onLoadError={(error) => {
                   console.error("Error cargando PDF:", error);
-                  console.log("PDF data:", pdfData.substring(0, 100)); // Log primeros 100 caracteres
+                  setError('Error al renderizar el PDF');
                 }}
-                loading={<div style={{ color: 'orange', fontWeight: 'bold' }}>Cargando PDF...</div>}
-                noData={<div style={{ color: 'red' }}>No se pudo cargar el PDF.</div>}
+                loading={<div style={{ color: 'orange', fontWeight: 'bold' }}>Renderizando PDF...</div>}
               >
-                {numPages && <Page 
-                  pageNumber={1} 
-                  renderTextLayer={false}
-                  renderAnnotationLayer={false}
-                  scale={1.5}
-                />}
+                {Array.from(new Array(numPages), (el, index) => (
+                  <Page
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                    scale={1.5}
+                  />
+                ))}
               </Document>
             ) : (
-              <div style={{ color: 'orange', fontWeight: 'bold' }}>Procesando PDF...</div>
+              <div style={{ color: 'red' }}>No se pudo cargar el PDF</div>
             )}
           </div>
         ) : (

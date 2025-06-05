@@ -159,10 +159,7 @@ function TerminalSimulada() {
         break;
 
       case "subir":
-        if (argumentos.length === 0) {
-          setHistorial(h => [...h, "Error: Debes indicar el archivo a subir."]);
-          return;
-        }
+        
 
         // Create a hidden file input
         const fileInput = document.createElement('input');

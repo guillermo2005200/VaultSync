@@ -32,7 +32,7 @@ root_link = "/api/v1"
 
 #Inicializamos las clases necesarias
 modelo = ModeloComandosBERT("services/comandos_12000_intercalado.csv")
-modelo.entrenar()
+#modelo.entrenar()
 monitorArchivos = MonitorArchivos()
 monitorArchivos.iniciar_vigilancia()
 
