@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 import os
+import bcrypt
 """Clase para manejar la conexión a la base de datos MySQL y realizar operaciones CRUD sobre la tabla 'usuarios'."""
 class DatabaseConnection:
     def __init__(self):
@@ -30,11 +31,15 @@ class DatabaseConnection:
         try:
             self.connect()
             cursor = self.connection.cursor()
+            # Generar el hash de la contraseña
+            salt = bcrypt.gensalt()
+            hashed_password = bcrypt.hashpw(usuario.contraseña.encode('utf-8'), salt)
+
             sql = """INSERT INTO usuarios (email, contraseña, nombre, apellido, direccion, activo, foto)
                      VALUES (%s, %s, %s, %s, %s, %s, %s)"""
             valores = (
                 usuario.email,
-                usuario.contraseña,
+                hashed_password,  # Guardamos el hash en lugar de la contraseña en texto plano
                 usuario.nombre,
                 usuario.apellido,
                 usuario.direccion,
@@ -63,7 +68,8 @@ class DatabaseConnection:
                 print("Usuario no encontrado.")
                 return False
 
-            if usuario["contraseña"] == contrasena:
+            # Verificar el hash de la contraseña
+            if bcrypt.checkpw(contrasena.encode('utf-8'), usuario["contraseña"].encode('utf-8')):
                 print("Credenciales válidas.")
                 return True
             else:
@@ -89,8 +95,12 @@ class DatabaseConnection:
                 print("Usuario no encontrado.")
                 return False
             else:
+                # Generar nuevo hash para la nueva contraseña
+                salt = bcrypt.gensalt()
+                hashed_password = bcrypt.hashpw(contrasena.encode('utf-8'), salt)
+
                 sql_update = "UPDATE usuarios SET contraseña = %s WHERE email = %s"
-                cursor.execute(sql_update, (contrasena, email))
+                cursor.execute(sql_update, (hashed_password, email))
                 self.connection.commit()
                 print("Contraseña actualizada correctamente.")
                 return True

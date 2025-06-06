@@ -129,7 +129,7 @@ function Nodos() {
             {renderCards(directorios)}
           </div>
   
-          <hr className="bg-white my-4" />
+          <hr className="bg-dark my-4" />
   
           <div className="row justify-content-center">
             {renderCards(archivos)}

@@ -11,11 +11,6 @@ class EmailSender:
         self.password = 'thos epga owci yqlo'
         self.server = smtplib.SMTP('smtp.gmail.com',587)
 
-        # Cargar la imagen del logo y convertirla a base64
-        with open("services/logo.png", "rb") as image_file:
-            import base64
-            self.base64_imagen = base64.b64encode(image_file.read()).decode()
-
     # cuando el usuario se registre, se le enviará un correo de bienvenida
     def enviar_bienvenida(self, destinatario, nombre):
         # Crear el mensaje
@@ -28,9 +23,6 @@ class EmailSender:
         body = f"""
         <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                  <img src="data:image/png;base64,{self.base64_imagen}" alt="VaultSync" style="width: 150px; height: auto;">
-                </div>
                 <h2 style="color: #0056b3;">Hola {nombre},</h2>
                 <p>
                     Gracias por registrarte en <strong>VaultSync</strong>. Estamos encantados de tenerte con nosotros.
@@ -74,9 +66,6 @@ class EmailSender:
         body = f"""
         <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="https://ruta-del-logo.com/logo.png" alt="VaultSync" style="width: 150px; height: auto;">
-                </div>
                 <h2 style="color: #0056b3;">Recuperación de Contraseña</h2>
                 <p>
                     Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en <strong>VaultSync</strong>.
