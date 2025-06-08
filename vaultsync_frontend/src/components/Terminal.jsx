@@ -295,7 +295,7 @@ function TerminalSimulada() {
     <div className="container-fluid p-0 vh-100 vw-100 d-flex flex-column bg-dark text-white terminal-fondo">
       <div className="bg-secondary py-2 px-3 d-flex align-items-center justify-content-between">
         <div>
-          <span className="me-2 terminal-circulo bg-danger"></span>
+          <span className="me-2 terminal-circulo bg-danger" onClick={() => setTerminal(false)}></span>
         </div>
         <span className="text-muted small">VaultSync Terminal</span>
         <span></span>

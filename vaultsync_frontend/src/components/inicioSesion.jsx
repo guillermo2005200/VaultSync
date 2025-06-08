@@ -129,7 +129,7 @@ function InicioSesion() {
           {loginError && <div className="text-danger text-center mt-2">{loginError}</div>}
           <button onClick={handleLogin} className="buttoninicio">Login</button>
           <button onClick={handlePassword} className="buttoninicio">Cambiar contraseña</button>
-          {recoveryError && <div className="text-danger text-center mt-2">{recoveryError}</div>}
+          {recoveryError && <div className="text-success text-center mt-2">{recoveryError}</div>}
         </form>
       </div>
     </div>
